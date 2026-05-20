@@ -1,0 +1,11 @@
+# Local development overrides — docker compose uses this automatically alongside docker-compose.yml
+# Exposes DB port so the locally-running backend can reach it
+services:
+  db:
+    ports:
+      - "5433:5432"
+  # Don't start backend or frontend containers during local dev
+  backend:
+    profiles: ["production"]
+  frontend:
+    profiles: ["production"]
