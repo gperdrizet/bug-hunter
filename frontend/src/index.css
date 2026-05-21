@@ -130,6 +130,8 @@ input:focus, select:focus { border-color: var(--accent); }
 }
 .badge-success { background: #14532d; color: var(--success); border-color: #166534; }
 .badge-pending { background: #1c1917; color: var(--warning); border-color: #78350f; }
+.badge-link { text-decoration: none; cursor: pointer; }
+.badge-link:hover { filter: brightness(1.2); }
 .badge-topic { background: var(--surface2); color: var(--accent); border-color: var(--border); }
 
 .difficulty-easy { color: var(--easy); }
@@ -180,7 +182,9 @@ input:focus, select:focus { border-color: var(--accent); }
   gap: 1rem;
   flex-wrap: wrap;
 }
-.header-left h1 { font-size: 1.4rem; color: var(--accent); }
+.header-left h1 { font-size: 1.4rem; color: var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+.nav-logo { width: 28px; height: 28px; image-rendering: pixelated; flex-shrink: 0; }
+.nav-logo-sm { width: 20px; height: 20px; image-rendering: pixelated; flex-shrink: 0; vertical-align: middle; }
 .welcome { color: var(--text-muted); font-size: 13px; }
 .header-nav { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 

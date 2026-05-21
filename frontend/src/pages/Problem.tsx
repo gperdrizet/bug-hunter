@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { getNextSnippet, saveInProgressCode, submitAttempt } from "../lib/api";
+import { Link, useSearchParams } from "react-router-dom";
+import { getNextSnippet, getSnippetById, saveInProgressCode, submitAttempt } from "../lib/api";
 import { loadPyodide, runCode, runTests } from "../lib/pyodide";
 import { useAuth } from "../context/AuthContext";
 import CodeEditor from "../components/CodeEditor";
@@ -12,6 +12,7 @@ const AUTOSAVE_DELAY_MS = 1500;
 
 export default function Problem() {
   const { user, logout } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Selector state
   const [topic, setTopic] = useState("functions");
@@ -36,6 +37,14 @@ export default function Problem() {
   // Autosave
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Load snippet on mount if ?resume= is present
+  useEffect(() => {
+    if (searchParams.get("resume")) {
+      fetchSnippet();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Eager Pyodide load on mount
   useEffect(() => {
     loadPyodide()
@@ -50,7 +59,9 @@ export default function Problem() {
     setCodeOutput(null);
     setSolved(false);
     try {
-      const s = await getNextSnippet(topic, difficulty);
+      const resumeId = searchParams.get("resume");
+      const s = resumeId ? await getSnippetById(resumeId) : await getNextSnippet(topic, difficulty);
+      setSearchParams({}, { replace: true });
       setSnippet(s);
       setCode(s.in_progress_code ?? s.broken_code);
     } catch (err: unknown) {
@@ -134,6 +145,7 @@ export default function Problem() {
     <div className="problem-layout">
       {/* Top bar */}
       <header className="problem-header">
+        <img src="/bug-hunter.svg" className="nav-logo-sm" alt="Bug Hunter" />
         <Link to="/dashboard" className="btn btn-ghost">
           Dashboard
         </Link>

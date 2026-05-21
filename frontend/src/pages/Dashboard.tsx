@@ -31,7 +31,7 @@ export default function Dashboard() {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-left">
-          <h1>Bug Hunter</h1>
+          <h1><img src="/bug-hunter.svg" className="nav-logo" alt="" />Bug Hunter</h1>
           <span className="welcome">
             Welcome, {user?.display_name ?? user?.email}
           </span>
@@ -119,7 +119,13 @@ export default function Dashboard() {
                 <tbody>
                   {history.map((h) => (
                     <tr key={h.snippet_id}>
-                      <td>{h.title}</td>
+                      <td>
+                        {h.solved_at ? (
+                          h.title
+                        ) : (
+                          <Link to={`/problem?resume=${h.snippet_id}`}>{h.title}</Link>
+                        )}
+                      </td>
                       <td>{topicLabel(h.topic)}</td>
                       <td className={`difficulty-${h.difficulty.toLowerCase()}`}>
                         {difficultyLabel(h.difficulty)}

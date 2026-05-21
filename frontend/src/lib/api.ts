@@ -85,6 +85,11 @@ export const getNextSnippet = async (topic: string, difficulty: string): Promise
   return data;
 };
 
+export const getSnippetById = async (id: string): Promise<SnippetResponse> => {
+  const { data } = await api.get<SnippetResponse>(`/snippets/${id}`);
+  return data;
+};
+
 // ---- Attempts ----
 export const submitAttempt = async (
   snippet_id: string,
