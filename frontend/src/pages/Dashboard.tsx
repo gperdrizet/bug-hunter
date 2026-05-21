@@ -38,7 +38,7 @@ export default function Dashboard() {
         </div>
         <nav className="header-nav">
           <Link to="/problem" className="btn btn-primary">
-            Practice →
+            Practice
           </Link>
           {user?.is_admin && (
             <Link to="/admin" className="btn btn-secondary">
@@ -52,7 +52,7 @@ export default function Dashboard() {
       </header>
 
       {loading ? (
-        <div className="loading">Loading stats…</div>
+        <div className="loading">Loading stats...</div>
       ) : (
         <>
           <section className="stats-grid">

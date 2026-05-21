@@ -91,7 +91,7 @@ export default function AdminGenerate() {
           onClick={handleGenerate}
           disabled={generating}
         >
-          {generating ? "Starting…" : "Generate Snippet"}
+          {generating ? "Starting..." : "Generate Snippet"}
         </button>
       </div>
 

@@ -68,7 +68,7 @@ export default function AdminSnippets() {
       {error && <p className="form-error">{error}</p>}
 
       {loading ? (
-        <div className="loading">Loading…</div>
+        <div className="loading">Loading...</div>
       ) : (
         <table className="admin-table">
           <thead>

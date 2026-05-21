@@ -12,13 +12,13 @@ export default function TestResults({ results }: TestResultsProps) {
   return (
     <div className="test-results">
       <div className={`overall-status ${allPassed ? "status-pass" : "status-fail"}`}>
-        {allPassed ? "✓ All tests passed!" : "✗ Some tests failed"}
+        {allPassed ? "All tests passed!" : "Some tests failed"}
       </div>
       <div className="test-list">
         {results.map((r, i) => (
           <div key={i} className={`test-item ${r.passed ? "test-pass" : "test-fail"}`}>
             <div className="test-name">
-              <span className="test-icon">{r.passed ? "✓" : "✗"}</span>
+              <span className="test-icon">{r.passed ? "PASS" : "FAIL"}</span>
               {r.name}
             </div>
             {r.stdout && (

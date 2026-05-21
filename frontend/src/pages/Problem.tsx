@@ -117,7 +117,7 @@ export default function Problem() {
       {/* Top bar */}
       <header className="problem-header">
         <Link to="/dashboard" className="btn btn-ghost">
-          ← Dashboard
+          Dashboard
         </Link>
         <SnippetSelector
           topic={topic}
@@ -182,13 +182,13 @@ export default function Problem() {
                   className="btn btn-primary"
                   onClick={handleRun}
                   disabled={!pyodideReady || running || solved}
-                  title={!pyodideReady ? "Loading Python runtime…" : ""}
+                  title={!pyodideReady ? "Loading Python runtime..." : ""}
                 >
                   {running
-                    ? "Running…"
+                    ? "Running..."
                     : !pyodideReady
-                    ? "Loading Python…"
-                    : "▶  Run Tests"}
+                    ? "Loading Python..."
+                    : "Run Tests"}
                 </button>
                 {!solved && (
                   <button
@@ -202,7 +202,7 @@ export default function Problem() {
                 )}
                 {solved && (
                   <button className="btn btn-secondary" onClick={fetchSnippet}>
-                    Next Snippet →
+                    Next Snippet
                   </button>
                 )}
               </div>

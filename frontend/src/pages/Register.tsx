@@ -82,7 +82,7 @@ export default function Register() {
           </div>
           {error && <p className="form-error">{error}</p>}
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? "Creating account…" : "Create Account"}
+            {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
         <p className="auth-link">

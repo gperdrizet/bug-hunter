@@ -58,7 +58,7 @@ export default function Login() {
           </div>
           {error && <p className="form-error">{error}</p>}
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? "Signing in…" : "Sign In"}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
         <p className="auth-link">

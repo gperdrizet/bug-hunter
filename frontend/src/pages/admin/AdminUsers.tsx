@@ -48,7 +48,7 @@ export default function AdminUsers() {
       {error && <p className="form-error">{error}</p>}
 
       {loading ? (
-        <div className="loading">Loading…</div>
+        <div className="loading">Loading...</div>
       ) : (
         <table className="admin-table">
           <thead>
@@ -65,7 +65,7 @@ export default function AdminUsers() {
             {users.map((u) => (
               <tr key={u.id} className={u.is_active ? "" : "row-inactive"}>
                 <td>{u.email}</td>
-                <td>{u.display_name ?? "—"}</td>
+                <td>{u.display_name ?? "-"}</td>
                 <td>{new Date(u.created_at).toLocaleDateString()}</td>
                 <td>
                   <button
