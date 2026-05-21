@@ -331,6 +331,11 @@ async def trigger_generation(
     return JobStatus(job_id=job_id, status="pending")
 
 
+@router.get("/snippets/jobs", response_model=list[JobStatus])
+async def list_jobs(admin=Depends(require_admin)):
+    return [JobStatus(job_id=jid, **job) for jid, job in _jobs.items()]
+
+
 @router.get("/snippets/jobs/{job_id}", response_model=JobStatus)
 async def get_job_status(job_id: str, admin=Depends(require_admin)):
     job = _jobs.get(job_id)
@@ -340,8 +345,10 @@ async def get_job_status(job_id: str, admin=Depends(require_admin)):
 
 
 async def _run_generation_job(job_id: str, topic: Topic, difficulty: Difficulty):
+    import logging
     from app.database import async_session_maker
 
+    logger = logging.getLogger(__name__)
     _jobs[job_id]["status"] = "running"
     try:
         data = await generate_snippet(topic, difficulty)
@@ -352,9 +359,11 @@ async def _run_generation_job(job_id: str, topic: Topic, difficulty: Difficulty)
             await session.refresh(snippet)
         _jobs[job_id]["status"] = "done"
         _jobs[job_id]["snippet_id"] = str(snippet.id)
+        logger.info("[job %s] generation complete, snippet_id=%s", job_id, snippet.id)
     except Exception as exc:
         _jobs[job_id]["status"] = "failed"
         _jobs[job_id]["error"] = str(exc)
+        logger.exception("[job %s] generation failed: %s", job_id, exc)
 
 
 def _snippet_out(s: Snippet) -> SnippetAdminOut:

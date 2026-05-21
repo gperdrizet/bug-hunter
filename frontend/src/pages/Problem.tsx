@@ -53,12 +53,13 @@ export default function Problem() {
       setCode(s.in_progress_code ?? s.broken_code);
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
       if (status === 404) {
         setSnippetError(
-          "No more unseen snippets for this topic/difficulty. Ask your instructor to generate more!"
+          detail ?? "No more unseen snippets for this topic/difficulty. Ask your instructor to generate more!"
         );
       } else {
-        setSnippetError("Failed to load snippet. Please try again.");
+        setSnippetError(detail ?? `Error ${status ?? "unknown"}: failed to load snippet.`);
       }
       setSnippet(null);
     } finally {

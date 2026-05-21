@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,7 +45,6 @@ async def get_next_snippet(
     difficulty: Difficulty,
     user: User = Depends(current_active_user),
     session: AsyncSession = Depends(get_async_session),
-    background_tasks: BackgroundTasks = BackgroundTasks(),
 ):
     # Find snippets this user has already seen for this topic+difficulty
     seen_subq = (

@@ -7,6 +7,7 @@ Pass 3: Generate broken version, verify it fails at least one test
 """
 import asyncio
 import json
+import logging
 import re
 import subprocess
 import sys
@@ -14,6 +15,8 @@ import tempfile
 import textwrap
 import uuid
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 from app.llm.providers import LLMProvider, get_provider
 from app.models import Difficulty, Topic
@@ -152,14 +155,19 @@ async def generate_snippet(
     if provider is None:
         provider = get_provider()
 
+    logger.info("[pipeline] starting generation: topic=%s difficulty=%s provider=%s", topic, difficulty, provider.provider_name)
+
     # ---- Pass 1: Working code ------------------------------------------------
     working_code = await _pass1_generate_working_code(provider, topic, difficulty)
+    logger.info("[pipeline] pass 1 done (%d chars)", len(working_code))
 
     # ---- Pass 2: Test cases --------------------------------------------------
     test_cases = await _pass2_generate_tests(provider, working_code)
+    logger.info("[pipeline] pass 2 done (%d test cases)", len(test_cases))
 
     # ---- Pass 3: Broken code -------------------------------------------------
     broken_code = await _pass3_generate_broken(provider, working_code, test_cases)
+    logger.info("[pipeline] pass 3 done")
 
     # ---- Extract title from working code -------------------------------------
     title = _extract_title(working_code, topic, difficulty)

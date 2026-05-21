@@ -78,8 +78,8 @@ class Snippet(Base):
     __tablename__ = "snippets"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    topic: Mapped[Topic] = mapped_column(Enum(Topic), nullable=False, index=True)
-    difficulty: Mapped[Difficulty] = mapped_column(Enum(Difficulty), nullable=False, index=True)
+    topic: Mapped[Topic] = mapped_column(Enum(Topic, native_enum=False), nullable=False, index=True)
+    difficulty: Mapped[Difficulty] = mapped_column(Enum(Difficulty, native_enum=False), nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(256), nullable=False)
     working_code: Mapped[str] = mapped_column(Text, nullable=False)
     broken_code: Mapped[str] = mapped_column(Text, nullable=False)
