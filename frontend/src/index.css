@@ -279,6 +279,12 @@ input:focus, select:focus { border-color: var(--accent); }
 .run-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .output-placeholder { color: var(--text-muted); font-size: 13px; line-height: 1.6; }
 
+.code-output { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.code-output-label { font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.05em; }
+.code-output-stdout { margin: 0; padding: 0.6rem 0.75rem; font-size: 13px; font-family: monospace; white-space: pre-wrap; word-break: break-all; color: var(--text); }
+.code-output-error { margin: 0; padding: 0.6rem 0.75rem; font-size: 13px; font-family: monospace; white-space: pre-wrap; word-break: break-all; color: #f87171; }
+.code-output-empty { display: block; padding: 0.6rem 0.75rem; font-size: 13px; color: var(--text-muted); font-style: italic; }
+
 /* =====================
    Snippet selector
    ===================== */

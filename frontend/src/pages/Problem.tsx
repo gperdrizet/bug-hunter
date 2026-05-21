@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getNextSnippet, saveInProgressCode, submitAttempt } from "../lib/api";
-import { loadPyodide, runTests } from "../lib/pyodide";
+import { loadPyodide, runCode, runTests } from "../lib/pyodide";
 import { useAuth } from "../context/AuthContext";
 import CodeEditor from "../components/CodeEditor";
 import TestResults from "../components/TestResults";
@@ -31,6 +31,7 @@ export default function Problem() {
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<TestResult[]>([]);
   const [solved, setSolved] = useState(false);
+  const [codeOutput, setCodeOutput] = useState<{ stdout: string; error: string | null } | null>(null);
 
   // Autosave
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -46,6 +47,7 @@ export default function Problem() {
     setSnippetError(null);
     setSnippetLoading(true);
     setResults([]);
+    setCodeOutput(null);
     setSolved(false);
     try {
       const s = await getNextSnippet(topic, difficulty);
@@ -81,6 +83,7 @@ export default function Problem() {
     if (!snippet || !pyodideReady || running) return;
     setRunning(true);
     setResults([]);
+    setCodeOutput(null);
     try {
       const testResults = await runTests(code, snippet.test_cases);
       setResults(testResults);
@@ -100,6 +103,20 @@ export default function Problem() {
         setSolved(true);
         if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
       }
+    } catch (e) {
+      console.error("Run error:", e);
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  const handleRunCode = async () => {
+    if (!pyodideReady || running) return;
+    setRunning(true);
+    setCodeOutput(null);
+    try {
+      const output = await runCode(code);
+      setCodeOutput(output);
     } catch (e) {
       console.error("Run error:", e);
     } finally {
@@ -180,6 +197,14 @@ export default function Problem() {
               {/* Controls */}
               <div className="run-controls">
                 <button
+                  className="btn btn-secondary"
+                  onClick={handleRunCode}
+                  disabled={!pyodideReady || running}
+                  title={!pyodideReady ? "Loading Python runtime..." : ""}
+                >
+                  {running ? "Running..." : "Run Code"}
+                </button>
+                <button
                   className="btn btn-primary"
                   onClick={handleRun}
                   disabled={!pyodideReady || running || solved}
@@ -214,9 +239,23 @@ export default function Problem() {
                 </p>
               )}
 
+              {codeOutput && (
+                <div className="code-output">
+                  <div className="code-output-label">Output</div>
+                  {codeOutput.error && (
+                    <pre className="code-output-error">{codeOutput.error}</pre>
+                  )}
+                  {codeOutput.stdout ? (
+                    <pre className="code-output-stdout">{codeOutput.stdout}</pre>
+                  ) : (
+                    !codeOutput.error && <span className="code-output-empty">(no output)</span>
+                  )}
+                </div>
+              )}
+
               <TestResults results={results} />
 
-              {results.length === 0 && !running && (
+              {results.length === 0 && !codeOutput && !running && (
                 <div className="output-placeholder">
                   Fix the bug in the code, then click <strong>Run Tests</strong>.
                 </div>

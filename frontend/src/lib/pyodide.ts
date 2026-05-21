@@ -53,6 +53,40 @@ export function isPyodideReady(): boolean {
 }
 
 /**
+ * Run student code in-browser and capture stdout/stderr.
+ * Does not run test cases.
+ */
+export async function runCode(studentCode: string): Promise<{ stdout: string; error: string | null }> {
+  const pyodide = await loadPyodide();
+
+  const captureCode = `
+import sys
+import io
+import contextlib
+
+_stdout_buf = io.StringIO()
+_run_error = None
+
+try:
+    with contextlib.redirect_stdout(_stdout_buf):
+${indent(studentCode, 8)}
+except Exception as e:
+    _run_error = f"{type(e).__name__}: {e}"
+except SystemExit:
+    _run_error = "SystemExit raised"
+`;
+
+  try {
+    await pyodide.runPythonAsync(captureCode);
+    const stdout = (pyodide.globals.get("_stdout_buf") as { getvalue: () => string }).getvalue?.() ?? "";
+    const error = pyodide.globals.get("_run_error") as string | null;
+    return { stdout, error };
+  } catch (e) {
+    return { stdout: "", error: String(e) };
+  }
+}
+
+/**
  * Run student code against test cases entirely in-browser.
  * Returns structured per-test results.
  */
