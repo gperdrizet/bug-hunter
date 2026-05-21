@@ -128,9 +128,10 @@ except SystemExit:
 
     try {
       await pyodide.runPythonAsync(captureCode);
-      passed = pyodide.globals.get("_result_passed") as boolean;
-      stdout = (pyodide.globals.get("_stdout_buf") as { getvalue: () => string }).getvalue?.() ?? "";
-      error = pyodide.globals.get("_result_error") as string | null;
+      passed = pyodide.globals.get("_result_passed") === true;
+      stdout = String((pyodide.globals.get("_stdout_buf") as { getvalue: () => string }).getvalue?.() ?? "");
+      const rawError = pyodide.globals.get("_result_error");
+      error = (rawError !== null && rawError !== undefined) ? String(rawError) : null;
     } catch (e) {
       error = String(e);
       passed = false;

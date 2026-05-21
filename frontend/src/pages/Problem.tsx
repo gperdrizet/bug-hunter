@@ -33,6 +33,7 @@ export default function Problem() {
   const [results, setResults] = useState<TestResult[]>([]);
   const [solved, setSolved] = useState(false);
   const [codeOutput, setCodeOutput] = useState<{ stdout: string; error: string | null } | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Autosave
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -95,9 +96,10 @@ export default function Problem() {
     setRunning(true);
     setResults([]);
     setCodeOutput(null);
+    setSubmitError(null);
+    let testResults: TestResult[] = [];
     try {
-      const testResults = await runTests(code, snippet.test_cases);
-      setResults(testResults);
+      testResults = await runTests(code, snippet.test_cases);
       const allPassed = testResults.every((r) => r.passed);
 
       await submitAttempt(
@@ -114,10 +116,23 @@ export default function Problem() {
         setSolved(true);
         if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
       }
-    } catch (e) {
-      console.error("Run error:", e);
+    } catch (e: unknown) {
+      const status = (e as { response?: { status?: number } })?.response?.status;
+      const rawDetail = (e as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
+      const detail = Array.isArray(rawDetail)
+        ? rawDetail.map((d: { loc?: unknown[]; msg?: string }) => `${d.loc?.slice(-1)[0]}: ${d.msg}`).join("; ")
+        : String(rawDetail ?? "server error");
+      if (status) {
+        setSubmitError(`Submission failed (${status}): ${detail}`);
+      } else if (testResults.length === 0) {
+        // runTests itself threw — surface as a generic error
+        console.error("Run error:", e);
+      } else {
+        setSubmitError("Submission failed: could not reach server.");
+      }
     } finally {
       setRunning(false);
+      setResults(testResults);
     }
   };
 
@@ -168,10 +183,7 @@ export default function Problem() {
       {/* Main content */}
       {!snippet && !snippetLoading && !snippetError && (
         <div className="problem-empty">
-          <p>Select a topic and difficulty, then click <strong>New Snippet</strong> to start.</p>
-          <button className="btn btn-primary" onClick={fetchSnippet}>
-            Get First Snippet
-          </button>
+          <p>Select a topic and difficulty above, then click <strong>New Snippet</strong> to start.</p>
         </div>
       )}
 
@@ -226,7 +238,7 @@ export default function Problem() {
                     ? "Running..."
                     : !pyodideReady
                     ? "Loading Python..."
-                    : "Run Tests"}
+                    : "Submit Solution"}
                 </button>
                 {!solved && (
                   <button
@@ -251,6 +263,10 @@ export default function Problem() {
                 </p>
               )}
 
+              {submitError && (
+                <p className="form-error">{submitError}</p>
+              )}
+
               {codeOutput && (
                 <div className="code-output">
                   <div className="code-output-label">Output</div>
@@ -269,7 +285,8 @@ export default function Problem() {
 
               {results.length === 0 && !codeOutput && !running && (
                 <div className="output-placeholder">
-                  Fix the bug in the code, then click <strong>Run Tests</strong>.
+                  Use <strong>Run Code</strong> to check your output as you work.
+                  When you think you've fixed the bug, click <strong>Submit Solution</strong> to check against the hidden test cases.
                 </div>
               )}
             </div>

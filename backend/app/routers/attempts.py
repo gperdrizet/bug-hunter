@@ -17,7 +17,7 @@ class TestResult(BaseModel):
     name: str
     passed: bool
     stdout: str
-    error: str | None
+    error: str | None = None
 
 
 class SubmitAttemptRequest(BaseModel):

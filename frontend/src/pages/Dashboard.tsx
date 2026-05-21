@@ -62,11 +62,11 @@ export default function Dashboard() {
             </div>
             <div className="stat-card">
               <div className="stat-value">{stats?.total_attempted ?? 0}</div>
-              <div className="stat-label">Attempts</div>
+              <div className="stat-label">Snippets Tried</div>
             </div>
             <div className="stat-card">
               <div className="stat-value">
-                {stats ? Math.round(stats.success_rate * 100) : 0}%
+                {stats ? Math.round(stats.success_rate) : 0}%
               </div>
               <div className="stat-label">Success Rate</div>
             </div>
@@ -112,7 +112,7 @@ export default function Dashboard() {
                     <th>Title</th>
                     <th>Topic</th>
                     <th>Difficulty</th>
-                    <th>Attempts</th>
+                    <th>Submissions</th>
                     <th>Status</th>
                   </tr>
                 </thead>
