@@ -112,7 +112,7 @@ export default function Dashboard() {
                     <th>Title</th>
                     <th>Topic</th>
                     <th>Difficulty</th>
-                    <th>Submissions</th>
+                    <th>Attempts</th>
                     <th>Status</th>
                   </tr>
                 </thead>

@@ -23,6 +23,7 @@ export default function Problem() {
   const [code, setCode] = useState("");
   const [snippetLoading, setSnippetLoading] = useState(false);
   const [snippetError, setSnippetError] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
 
   // Pyodide state
   const [pyodideReady, setPyodideReady] = useState(false);
@@ -35,8 +36,9 @@ export default function Problem() {
   const [codeOutput, setCodeOutput] = useState<{ stdout: string; error: string | null } | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Autosave
+  // Timers
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const generatingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load snippet on mount if ?resume= is present
   useEffect(() => {
@@ -56,9 +58,11 @@ export default function Problem() {
   const fetchSnippet = useCallback(async () => {
     setSnippetError(null);
     setSnippetLoading(true);
+    setGenerating(false);
     setResults([]);
     setCodeOutput(null);
     setSolved(false);
+    generatingTimer.current = setTimeout(() => setGenerating(true), 2000);
     try {
       const resumeId = searchParams.get("resume");
       const s = resumeId ? await getSnippetById(resumeId) : await getNextSnippet(topic, difficulty);
@@ -77,6 +81,8 @@ export default function Problem() {
       }
       setSnippet(null);
     } finally {
+      if (generatingTimer.current) clearTimeout(generatingTimer.current);
+      setGenerating(false);
       setSnippetLoading(false);
     }
   }, [topic, difficulty]);
@@ -181,6 +187,19 @@ export default function Problem() {
       </header>
 
       {/* Main content */}
+      {snippetLoading && (
+        <div className="problem-empty">
+          {generating ? (
+            <>
+              <p><strong>Hang tight — AI is generating a new problem for you.</strong></p>
+              <p className="output-placeholder">This usually takes about 15-30 seconds.</p>
+            </>
+          ) : (
+            <p>Loading…</p>
+          )}
+        </div>
+      )}
+
       {!snippet && !snippetLoading && !snippetError && (
         <div className="problem-empty">
           <p>Select a topic and difficulty above, then click <strong>New Snippet</strong> to start.</p>

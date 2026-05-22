@@ -38,3 +38,8 @@ app.include_router(users.router, prefix="/api")
 app.include_router(snippets.router, prefix="/api")
 app.include_router(attempts.router, prefix="/api")
 app.include_router(admin.router, prefix="/api")
+
+
+@app.get("/api/health")
+async def health():
+    return {"status": "ok"}

@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -8,8 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth import current_active_user
 from app.database import get_async_session
 from app.models import Difficulty, Snippet, Topic, User, UserSnippetRecord
+from app.pipeline import generate_snippet
 
 router = APIRouter(prefix="/snippets", tags=["snippets"])
+logger = logging.getLogger(__name__)
 
 
 class SnippetResponse(BaseModel):
@@ -67,10 +70,21 @@ async def get_next_snippet(
     snippet = result.scalar_one_or_none()
 
     if snippet is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No unseen snippets available for this topic and difficulty. Try generating more in the admin panel.",
+        logger.info(
+            "No unseen snippet for %s/%s; generating on demand for user %s",
+            topic.value, difficulty.value, user.id,
         )
+        try:
+            data = await generate_snippet(topic, difficulty)
+            snippet = Snippet(**data)
+            session.add(snippet)
+            await session.flush()
+        except Exception as exc:
+            logger.exception("On-demand snippet generation failed: %s", exc)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Could not generate a new problem right now. Please try again.",
+            )
 
     record = await _get_or_create_record(session, user.id, snippet)
     await session.commit()
