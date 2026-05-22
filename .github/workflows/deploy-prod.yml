@@ -1,0 +1,83 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. 1.2.3)"
+        required: true
+      confirm:
+        description: "Type 'deploy' to confirm production deployment"
+        required: true
+        default: ""
+
+permissions:
+  contents: write  # needed to create tags and releases
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm intent
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "deploy" ]; then
+            echo "Confirmation string must be 'deploy'. Got: ${{ github.event.inputs.confirm }}"
+            exit 1
+          fi
+
+  deploy-prod:
+    needs: guard
+    runs-on: ubuntu-latest
+    environment: production
+    # requires manual approval in GitHub → Settings → Environments
+    steps:
+      - uses: actions/checkout@v4.3.1
+
+      - name: Deploy to production
+        env:
+          SSH_KEY: ${{ secrets.GATEKEEPER_SSH_KEY }}
+          HOST: ${{ secrets.GATEKEEPER_HOST }}
+          USER: ${{ secrets.GATEKEEPER_USER }}
+        run: |
+          KEY_FILE=$(mktemp)
+          chmod 600 "$KEY_FILE"
+          echo "$SSH_KEY" > "$KEY_FILE"
+
+          ssh -i "$KEY_FILE" \
+            -p 44441 \
+            -o StrictHostKeyChecking=no \
+            -o BatchMode=yes \
+            "$USER@$HOST" bash -s << 'REMOTE'
+          set -euo pipefail
+          DEPLOY_DIR=/opt/bug-hunter
+
+          if [ ! -d "$DEPLOY_DIR/.git" ]; then
+            git clone https://github.com/gperdrizet/bug-hunter.git "$DEPLOY_DIR"
+          else
+            git -C "$DEPLOY_DIR" pull --ff-only
+          fi
+
+          cd "$DEPLOY_DIR"
+
+          docker compose up --build -d --remove-orphans
+
+          sleep 20
+          curl -fsS http://127.0.0.1:8509/api/health | grep '"status":"ok"'
+          echo "Production deploy OK"
+          REMOTE
+
+          rm -f "$KEY_FILE"
+
+      - name: Tag and create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="v${{ github.event.inputs.version }}"
+          git tag "$VERSION"
+          git push origin "$VERSION"
+          gh release create "$VERSION" \
+            --title "Release $VERSION" \
+            --generate-notes

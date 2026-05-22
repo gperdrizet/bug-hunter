@@ -1,0 +1,4 @@
+services:
+  frontend:
+    ports:
+      - "100.64.0.1:8507:80"

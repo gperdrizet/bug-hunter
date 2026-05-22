@@ -1,0 +1,55 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy to staging
+        env:
+          SSH_KEY: ${{ secrets.GATEKEEPER_SSH_KEY }}
+          HOST: ${{ secrets.GATEKEEPER_HOST }}
+          USER: ${{ secrets.GATEKEEPER_USER }}
+        run: |
+          KEY_FILE=$(mktemp)
+          chmod 600 "$KEY_FILE"
+          echo "$SSH_KEY" > "$KEY_FILE"
+
+          ssh_cmd() {
+            ssh -i "$KEY_FILE" \
+              -p 44441 \
+              -o StrictHostKeyChecking=no \
+              -o BatchMode=yes \
+              "$USER@$HOST" "$@"
+          }
+
+          ssh_cmd bash -s << 'REMOTE'
+          set -euo pipefail
+          DEPLOY_DIR=/opt/bug-hunter-staging
+
+          if [ ! -d "$DEPLOY_DIR/.git" ]; then
+            git clone https://github.com/gperdrizet/bug-hunter.git "$DEPLOY_DIR"
+          else
+            git -C "$DEPLOY_DIR" pull --ff-only
+          fi
+
+          cd "$DEPLOY_DIR"
+
+          COMPOSE_PROJECT_NAME=bug-hunter-staging docker compose \
+            -f docker-compose.yml \
+            -f docker-compose.staging.yml \
+            up --build -d --remove-orphans
+
+          sleep 20
+          curl -fsS http://100.64.0.1:8507/api/health | grep '"status":"ok"'
+          echo "Staging deploy OK"
+          REMOTE
+
+          rm -f "$KEY_FILE"
