@@ -4,12 +4,12 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --bg: #0b0d0b;
-  --surface: #111611;
-  --surface2: #192019;
-  --border: #263526;
-  --text: #ccd8cc;
-  --text-muted: #697a65;
+  --bg: #0d0d0d;
+  --surface: #151515;
+  --surface2: #1e1e1e;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-muted: #888888;
   --accent: #1e9e5c;
   --accent-hover: #28b86b;
   --success: #4ade80;
@@ -35,7 +35,7 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 h1, h2, h3 { margin: 0 0 0.5rem; }
 
 pre {
-  background: #080c08;
+  background: #0a0a0a;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.75rem;
@@ -303,7 +303,7 @@ input:focus, select:focus { border-color: var(--accent); }
 .run-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .output-placeholder { color: var(--text-muted); font-size: 13px; line-height: 1.6; }
 
-.code-output { background: #080c08; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.code-output { background: #0a0a0a; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
 .code-output-label { font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.05em; }
 .code-output-stdout { margin: 0; padding: 0.6rem 0.75rem; font-size: 13px; font-family: monospace; white-space: pre-wrap; word-break: break-all; color: var(--text); }
 .code-output-error { margin: 0; padding: 0.6rem 0.75rem; font-size: 13px; font-family: monospace; white-space: pre-wrap; word-break: break-all; color: #f87171; }

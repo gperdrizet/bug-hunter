@@ -1,7 +1,8 @@
 // Two-frame pixel-art walking animation using a tripod gait.
-// Frame A: Tripod A (L-front, R-mid, L-back) supporting; Tripod B raised 1px.
-// Frame B: Tripod B (R-front, L-mid, R-back) supporting; Tripod A raised 1px.
-// CSS alternates the two <g> groups with steps(1, end) for crisp pixel jumps.
+// Each leg pivots between two angles — swept forward (raised/swinging) and swept back (planted/pushing).
+// Frame A: Tripod A (L-front, R-mid, L-back) planted/swept-back · Tripod B raised/swept-forward.
+// Frame B: Tripod B (R-front, L-mid, R-back) planted/swept-back · Tripod A raised/swept-forward.
+// Leg tips sweep 4 pixels vertically between frames for a visible angle change.
 
 const G = "#00FF41"; // main green
 const D = "#00CC33"; // darker wing stripe
@@ -38,62 +39,70 @@ export default function BugSpinner({ size = 96 }: { size?: number }) {
       {/* Tail */}
       <rect x="6" y="12" width="4" height="1" fill={G} />
 
-      {/* ── Frame A: Tripod A normal · Tripod B raised ── */}
+      {/* ── Frame A: Tripod A planted (swept back) · Tripod B raised (swept forward) ── */}
       <g className="bug-walk-a">
-        {/* L-front — normal: (4,6) (3,5) (1-2,4) */}
-        <rect x="4" y="6" width="1" height="1" fill={G} />
-        <rect x="3" y="5" width="1" height="1" fill={G} />
-        <rect x="1" y="4" width="2" height="1" fill={G} />
+        {/* L-front — planted/back:    root(4,6) → (3,7) → tip(1-2,8) */}
+        <rect x="4" y="6"  width="1" height="1" fill={G} />
+        <rect x="3" y="7"  width="1" height="1" fill={G} />
+        <rect x="1" y="8"  width="2" height="1" fill={G} />
 
-        {/* R-mid — normal: (11-14,8) */}
-        <rect x="11" y="8" width="4" height="1" fill={G} />
+        {/* R-mid — planted/back:      root(11,8) → (12,9) → tip(13-14,10) */}
+        <rect x="11" y="8"  width="1" height="1" fill={G} />
+        <rect x="12" y="9"  width="1" height="1" fill={G} />
+        <rect x="13" y="10" width="2" height="1" fill={G} />
 
-        {/* L-back — normal: (4,10) (3,11) (1-2,12) */}
+        {/* L-back — planted/back:     root(4,10) → (3,11) → tip(1-2,12) */}
         <rect x="4" y="10" width="1" height="1" fill={G} />
         <rect x="3" y="11" width="1" height="1" fill={G} />
         <rect x="1" y="12" width="2" height="1" fill={G} />
 
-        {/* R-front — raised (y−1): (11,5) (12,4) (13-14,3) */}
-        <rect x="11" y="5" width="1" height="1" fill={G} />
-        <rect x="12" y="4" width="1" height="1" fill={G} />
-        <rect x="13" y="3" width="2" height="1" fill={G} />
-
-        {/* L-mid — raised (y−1): (1-4,7) */}
-        <rect x="1" y="7" width="4" height="1" fill={G} />
-
-        {/* R-back — raised (y−1): (11,9) (12,10) (13-14,11) */}
-        <rect x="11" y="9"  width="1" height="1" fill={G} />
-        <rect x="12" y="10" width="1" height="1" fill={G} />
-        <rect x="13" y="11" width="2" height="1" fill={G} />
-      </g>
-
-      {/* ── Frame B: Tripod A raised · Tripod B normal ── */}
-      <g className="bug-walk-b">
-        {/* L-front — raised (y−1): (4,5) (3,4) (1-2,3) */}
-        <rect x="4" y="5" width="1" height="1" fill={G} />
-        <rect x="3" y="4" width="1" height="1" fill={G} />
-        <rect x="1" y="3" width="2" height="1" fill={G} />
-
-        {/* R-mid — raised (y−1): (11-14,7) */}
-        <rect x="11" y="7" width="4" height="1" fill={G} />
-
-        {/* L-back — raised (y−1): (4,9) (3,10) (1-2,11) */}
-        <rect x="4" y="9"  width="1" height="1" fill={G} />
-        <rect x="3" y="10" width="1" height="1" fill={G} />
-        <rect x="1" y="11" width="2" height="1" fill={G} />
-
-        {/* R-front — normal: (11,6) (12,5) (13-14,4) */}
+        {/* R-front — raised/forward:  root(11,6) → (12,5) → tip(13-14,4) */}
         <rect x="11" y="6" width="1" height="1" fill={G} />
         <rect x="12" y="5" width="1" height="1" fill={G} />
         <rect x="13" y="4" width="2" height="1" fill={G} />
 
-        {/* L-mid — normal: (1-4,8) */}
-        <rect x="1" y="8" width="4" height="1" fill={G} />
+        {/* L-mid — raised/forward:    root(4,8) → (3,7) → tip(1-2,6) */}
+        <rect x="4" y="8" width="1" height="1" fill={G} />
+        <rect x="3" y="7" width="1" height="1" fill={G} />
+        <rect x="1" y="6" width="2" height="1" fill={G} />
 
-        {/* R-back — normal: (11,10) (12,11) (13-14,12) */}
+        {/* R-back — raised/forward:   root(11,10) → (12,9) → tip(13-14,8) */}
+        <rect x="11" y="10" width="1" height="1" fill={G} />
+        <rect x="12" y="9"  width="1" height="1" fill={G} />
+        <rect x="13" y="8"  width="2" height="1" fill={G} />
+      </g>
+
+      {/* ── Frame B: Tripod B planted (swept back) · Tripod A raised (swept forward) ── */}
+      <g className="bug-walk-b">
+        {/* R-front — planted/back:    root(11,6) → (12,7) → tip(13-14,8) */}
+        <rect x="11" y="6" width="1" height="1" fill={G} />
+        <rect x="12" y="7" width="1" height="1" fill={G} />
+        <rect x="13" y="8" width="2" height="1" fill={G} />
+
+        {/* L-mid — planted/back:      root(4,8) → (3,9) → tip(1-2,10) */}
+        <rect x="4" y="8"  width="1" height="1" fill={G} />
+        <rect x="3" y="9"  width="1" height="1" fill={G} />
+        <rect x="1" y="10" width="2" height="1" fill={G} />
+
+        {/* R-back — planted/back:     root(11,10) → (12,11) → tip(13-14,12) */}
         <rect x="11" y="10" width="1" height="1" fill={G} />
         <rect x="12" y="11" width="1" height="1" fill={G} />
         <rect x="13" y="12" width="2" height="1" fill={G} />
+
+        {/* L-front — raised/forward:  root(4,6) → (3,5) → tip(1-2,4) */}
+        <rect x="4" y="6" width="1" height="1" fill={G} />
+        <rect x="3" y="5" width="1" height="1" fill={G} />
+        <rect x="1" y="4" width="2" height="1" fill={G} />
+
+        {/* R-mid — raised/forward:    root(11,8) → (12,7) → tip(13-14,6) */}
+        <rect x="11" y="8" width="1" height="1" fill={G} />
+        <rect x="12" y="7" width="1" height="1" fill={G} />
+        <rect x="13" y="6" width="2" height="1" fill={G} />
+
+        {/* L-back — raised/forward:   root(4,10) → (3,9) → tip(1-2,8) */}
+        <rect x="4"  y="10" width="1" height="1" fill={G} />
+        <rect x="3"  y="9"  width="1" height="1" fill={G} />
+        <rect x="1"  y="8"  width="2" height="1" fill={G} />
       </g>
     </svg>
   );
