@@ -17,6 +17,7 @@ from pathlib import Path
 
 from app.llm.providers import LLMProvider, get_provider
 from app.models import Difficulty, Topic
+from app.pipeline.examples import sample_examples
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +83,7 @@ PASS1_PROMPT = """You are generating Python code for an educational bug-fixing p
 Topic: {topic}
 Difficulty: {difficulty}
 
-Write a concise Python code snippet (10–30 lines) that:
+{negatives_section}{examples_section}Write a concise Python code snippet (10–30 lines) that:
 1. Clearly demonstrates the topic and ONLY the topic — every function must be directly related to it
 2. Is appropriate for the difficulty level (easy = beginner, medium = intermediate, hard = advanced)
 3. Defines one primary function (plus helper functions only if they directly support it) that can be tested with specific inputs and expected outputs
@@ -147,6 +148,7 @@ async def generate_snippet(
     topic: Topic,
     difficulty: Difficulty,
     provider: LLMProvider | None = None,
+    existing_snippets: list[str] | None = None,
 ) -> dict:
     """
     Run the 3-pass generation pipeline.
@@ -159,7 +161,7 @@ async def generate_snippet(
     logger.info("[pipeline] starting generation: topic=%s difficulty=%s provider=%s", topic, difficulty, provider.provider_name)
 
     # ---- Pass 1: Working code ------------------------------------------------
-    working_code = await _pass1_generate_working_code(provider, topic, difficulty)
+    working_code = await _pass1_generate_working_code(provider, topic, difficulty, existing_snippets or [])
     logger.info("[pipeline] pass 1 done (%d chars)", len(working_code))
 
     # ---- Pass 2: Test cases --------------------------------------------------
@@ -186,8 +188,42 @@ async def generate_snippet(
     }
 
 
-async def _pass1_generate_working_code(provider: LLMProvider, topic: Topic, difficulty: Difficulty) -> str:
-    prompt = PASS1_PROMPT.format(topic=topic.value.replace("_", " "), difficulty=difficulty.value)
+async def _pass1_generate_working_code(
+    provider: LLMProvider,
+    topic: Topic,
+    difficulty: Difficulty,
+    existing_snippets: list[str] | None = None,
+) -> str:
+    examples = sample_examples(topic, n=2)
+    if examples:
+        parts = ["For diversity, here are example snippets on this topic. "
+                 "Write something with a DIFFERENT concept or approach than any of these:\n"]
+        for i, ex in enumerate(examples, 1):
+            parts.append(f"--- Example {i} ---\n```python\n{ex}```\n")
+        parts.append("Your snippet MUST use a different algorithm, data structure, "
+                     "or problem than the examples above.\n\n")
+        examples_section = "\n".join(parts)
+    else:
+        examples_section = ""
+
+    if existing_snippets:
+        neg_parts = [
+            "The following snippets have ALREADY been generated for this topic. "
+            "Do NOT write the same function, algorithm, or concept as any of these:\n"
+        ]
+        for i, code in enumerate(existing_snippets, 1):
+            neg_parts.append(f"--- Already generated {i} ---\n```python\n{code.strip()}\n```\n")
+        neg_parts.append("Write something conceptually distinct from all of the above.\n\n")
+        negatives_section = "\n".join(neg_parts)
+    else:
+        negatives_section = ""
+
+    prompt = PASS1_PROMPT.format(
+        topic=topic.value.replace("_", " "),
+        difficulty=difficulty.value,
+        examples_section=examples_section,
+        negatives_section=negatives_section,
+    )
     for attempt in range(MAX_RETRIES):
         raw = await provider.complete(prompt)
         code = _extract_code_block(raw)
