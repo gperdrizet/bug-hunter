@@ -83,10 +83,12 @@ Topic: {topic}
 Difficulty: {difficulty}
 
 Write a concise Python code snippet (10–30 lines) that:
-1. Clearly demonstrates the topic
+1. Clearly demonstrates the topic and ONLY the topic — every function must be directly related to it
 2. Is appropriate for the difficulty level (easy = beginner, medium = intermediate, hard = advanced)
-3. Defines one or more functions that can be tested with specific inputs and expected outputs
+3. Defines one primary function (plus helper functions only if they directly support it) that can be tested with specific inputs and expected outputs
 4. Is complete and correct — it must run without errors
+
+Important: do NOT include unrelated functions. A snippet about multiplication must not contain string-formatting, greeting, or other unrelated logic. Keep the scope tight.
 
 Return ONLY the Python code, no explanation, no markdown fences."""
 
