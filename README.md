@@ -23,10 +23,10 @@ cp .env.example .env
 ```
 
 Edit `.env` and set at minimum:
-- `SECRET_KEY` — any long random string for local dev
-- `OPENAI_BASE_URL` — your LLM endpoint (e.g. `https://promptlyapi.com/v1`)
-- `OPENAI_MODEL` — model name your endpoint accepts
-- `OPENAI_API_KEY` — your API key
+- `SECRET_KEY`: any long random string for local dev
+- `OPENAI_BASE_URL`: your LLM endpoint (e.g. `https://promptlyapi.com/v1`)
+- `OPENAI_MODEL`: model name your endpoint accepts
+- `OPENAI_API_KEY`: your API key
 
 **2. Start PostgreSQL**
 
@@ -112,18 +112,18 @@ The project uses two environments hosted on gatekeeper:
 
 ### CI/CD Workflows
 
-**Tests** (`test.yml`) — runs on every pull request to `main`:
+**Tests** (`test.yml`): runs on every pull request to `main`:
 - `lint-backend`: ruff lint check of the backend
 - `typecheck-frontend`: `npm run build` (runs `tsc -b`)
 
 Both jobs must pass before a PR can be merged.
 
-**Deploy Staging** (`deploy-staging.yml`) — runs automatically on every push to `main`:
+**Deploy Staging** (`deploy-staging.yml`): runs automatically on every push to `main`:
 - SSHs into gatekeeper, pulls latest code to `/opt/bug-hunter-staging/`
 - Builds and starts containers with `docker compose -f docker-compose.yml -f docker-compose.staging.yml up --build -d`
 - Health checks `http://100.64.0.1:8507/api/health`
 
-**Deploy Production** (`deploy-prod.yml`) — manual dispatch only:
+**Deploy Production** (`deploy-prod.yml`): manual dispatch only:
 - Requires `version` (e.g. `v0.1.0`) and `confirm` set to `deploy`
 - SSHs into gatekeeper, pulls latest code to `/opt/bug-hunter/`
 - Builds and starts containers with `docker compose up --build -d`
