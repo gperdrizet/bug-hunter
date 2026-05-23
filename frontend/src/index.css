@@ -262,10 +262,14 @@ input:focus, select:focus { border-color: var(--accent); }
 }
 
 /* BugSpinner walking animation — two-frame tripod gait */
-@keyframes bug-show-a { from { opacity: 1; } to { opacity: 0; } }
-@keyframes bug-show-b { from { opacity: 0; } to { opacity: 1; } }
-.bug-walk-a { animation: bug-show-a 0.4s steps(1, end) infinite alternate; }
-.bug-walk-b { animation: bug-show-b 0.4s steps(1, end) infinite alternate; }
+/* One keyframe: opacity 1 for first half, 0 for second half.
+   bug-walk-b starts half a cycle late so it's always the complement. */
+@keyframes bug-frame-toggle {
+  0%,  100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.bug-walk-a { animation: bug-frame-toggle 0.8s step-end infinite; }
+.bug-walk-b { animation: bug-frame-toggle 0.8s step-end infinite; animation-delay: -0.4s; }
 
 .problem-body { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 
