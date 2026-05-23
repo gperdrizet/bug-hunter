@@ -61,7 +61,7 @@ async def get_next_snippet(
         .where(
             Snippet.topic == topic,
             Snippet.difficulty == difficulty,
-            Snippet.is_active == True,
+            Snippet.is_active,
             Snippet.id.not_in(seen_subq),
         )
         .order_by(func.random())
@@ -112,7 +112,7 @@ async def get_snippet_by_id(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid snippet ID.")
 
     result = await session.execute(
-        select(Snippet).where(Snippet.id == sid, Snippet.is_active == True)
+        select(Snippet).where(Snippet.id == sid, Snippet.is_active)
     )
     snippet = result.scalar_one_or_none()
     if snippet is None:

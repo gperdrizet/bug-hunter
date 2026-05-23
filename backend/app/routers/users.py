@@ -1,14 +1,13 @@
-import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import current_active_user
 from app.database import get_async_session
-from app.models import Snippet, Topic, User, UserSnippetRecord
+from app.models import Snippet, User, UserSnippetRecord
 
 router = APIRouter(prefix="/me", tags=["users"])
 
@@ -81,7 +80,7 @@ async def get_my_history(
         .order_by(UserSnippetRecord.last_attempt_at.desc().nullslast())
     )
     if solved_only:
-        query = query.where(UserSnippetRecord.solved == True)
+        query = query.where(UserSnippetRecord.solved)
 
     result = await session.execute(query)
     rows = result.all()

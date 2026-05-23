@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi_users import schemas
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import auth_backend, fastapi_users, get_user_manager
@@ -42,8 +42,8 @@ async def register(
     result = await session.execute(
         select(InviteCode).where(
             InviteCode.code == request_data.invite_code,
-            InviteCode.is_active == True,
-            InviteCode.used_by_id == None,
+            InviteCode.is_active,
+            InviteCode.used_by_id.is_(None),
         )
     )
     invite = result.scalar_one_or_none()

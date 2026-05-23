@@ -12,14 +12,13 @@ import re
 import subprocess
 import sys
 import tempfile
-import textwrap
 import uuid
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
-
 from app.llm.providers import LLMProvider, get_provider
 from app.models import Difficulty, Topic
+
+logger = logging.getLogger(__name__)
 
 MAX_RETRIES = 3
 SUBPROCESS_TIMEOUT = 10  # seconds

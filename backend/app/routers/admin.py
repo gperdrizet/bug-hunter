@@ -1,16 +1,15 @@
 import secrets
 import uuid
-from datetime import datetime, timezone
-from typing import Any
+from datetime import datetime
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import delete, select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import require_admin
 from app.database import get_async_session
-from app.models import Difficulty, InviteCode, Snippet, Topic, User, UserSnippetRecord
+from app.models import Difficulty, InviteCode, Snippet, Topic, User
 from app.pipeline import generate_snippet
 
 router = APIRouter(prefix="/admin", tags=["admin"])

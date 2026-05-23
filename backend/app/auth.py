@@ -1,16 +1,14 @@
 import uuid
-from datetime import datetime, timezone
 
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
 from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
 from fastapi_users.db import SQLAlchemyUserDatabase
-from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import get_async_session
-from app.models import InviteCode, User
+from app.models import User
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
