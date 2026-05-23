@@ -131,7 +131,7 @@ export default function Problem() {
       if (status) {
         setSubmitError(`Submission failed (${status}): ${detail}`);
       } else if (testResults.length === 0) {
-        // runTests itself threw — surface as a generic error
+        // runTests itself threw - surface as a generic error
         console.error("Run error:", e);
       } else {
         setSubmitError("Submission failed: could not reach server.");
@@ -191,7 +191,7 @@ export default function Problem() {
         <div className="problem-empty">
           {generating ? (
             <>
-              <p><strong>Hang tight — AI is generating a new problem for you.</strong></p>
+              <p><strong>Hang tight - AI is generating a new problem for you.</strong></p>
               <p className="output-placeholder">This usually takes about 15-30 seconds.</p>
             </>
           ) : (

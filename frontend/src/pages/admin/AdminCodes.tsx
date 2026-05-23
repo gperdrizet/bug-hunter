@@ -91,7 +91,7 @@ export default function AdminCodes() {
                 </td>
                 <td>{c.is_active ? "Yes" : "No"}</td>
                 <td>{new Date(c.created_at).toLocaleDateString()}</td>
-                <td>{c.used_at ? new Date(c.used_at).toLocaleDateString() : "—"}</td>
+                <td>{c.used_at ? new Date(c.used_at).toLocaleDateString() : "-"}</td>
                 <td>
                   {c.is_active && (
                     <button
