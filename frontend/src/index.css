@@ -52,6 +52,7 @@ pre {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   padding: 0.45rem 1rem;
   border: 1px solid transparent;
