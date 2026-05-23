@@ -251,6 +251,16 @@ input:focus, select:focus { border-color: var(--accent); }
   color: var(--text-muted);
 }
 
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
 .problem-body { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 
 .snippet-info {
