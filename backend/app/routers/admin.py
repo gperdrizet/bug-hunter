@@ -4,7 +4,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import require_admin
@@ -350,7 +350,15 @@ async def _run_generation_job(job_id: str, topic: Topic, difficulty: Difficulty)
     logger = logging.getLogger(__name__)
     _jobs[job_id]["status"] = "running"
     try:
-        data = await generate_snippet(topic, difficulty)
+        async with async_session_maker() as session:
+            neg_result = await session.execute(
+                select(Snippet.working_code)
+                .where(Snippet.topic == topic, Snippet.difficulty == difficulty, Snippet.is_active)
+                .order_by(func.random())
+                .limit(5)
+            )
+            existing_codes = list(neg_result.scalars().all())
+        data = await generate_snippet(topic, difficulty, existing_snippets=existing_codes)
         async with async_session_maker() as session:
             snippet = Snippet(**data)
             session.add(snippet)

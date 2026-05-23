@@ -75,7 +75,14 @@ async def get_next_snippet(
             topic.value, difficulty.value, user.id,
         )
         try:
-            data = await generate_snippet(topic, difficulty)
+            neg_result = await session.execute(
+                select(Snippet.working_code)
+                .where(Snippet.topic == topic, Snippet.difficulty == difficulty, Snippet.is_active)
+                .order_by(func.random())
+                .limit(5)
+            )
+            existing_codes = list(neg_result.scalars().all())
+            data = await generate_snippet(topic, difficulty, existing_snippets=existing_codes)
             snippet = Snippet(**data)
             session.add(snippet)
             await session.flush()
