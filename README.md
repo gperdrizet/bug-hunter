@@ -19,7 +19,7 @@ Educational tool for learning Python. Students are shown broken Python snippets 
 **1. Configure environment**
 
 ```bash
-cp .env.example .env
+cp .env.template .env
 ```
 
 Edit `.env` and set at minimum:
