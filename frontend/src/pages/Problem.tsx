@@ -24,6 +24,7 @@ export default function Problem() {
   const [snippetLoading, setSnippetLoading] = useState(false);
   const [snippetError, setSnippetError] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   // Pyodide state
   const [pyodideReady, setPyodideReady] = useState(false);
@@ -39,6 +40,8 @@ export default function Problem() {
   // Timers
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const generatingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryCount = useRef(0);
 
   // Load snippet on mount if ?resume= is present
   useEffect(() => {
@@ -55,36 +58,70 @@ export default function Problem() {
       .catch((e) => setPyodideError(String(e)));
   }, []);
 
-  const fetchSnippet = useCallback(async () => {
+  const fetchSnippet = useCallback(async (isRetry = false) => {
+    if (retryTimer.current) {
+      clearTimeout(retryTimer.current);
+      retryTimer.current = null;
+    }
+    if (!isRetry) {
+      retryCount.current = 0;
+      setIsRetrying(false);
+      setResults([]);
+      setCodeOutput(null);
+      setSolved(false);
+      setGenerating(false);
+      generatingTimer.current = setTimeout(() => setGenerating(true), 2000);
+    }
     setSnippetError(null);
     setSnippetLoading(true);
-    setGenerating(false);
-    setResults([]);
-    setCodeOutput(null);
-    setSolved(false);
-    generatingTimer.current = setTimeout(() => setGenerating(true), 2000);
+    let willRetry = false;
     try {
       const resumeId = searchParams.get("resume");
       const s = resumeId ? await getSnippetById(resumeId) : await getNextSnippet(topic, difficulty);
+      retryCount.current = 0;
+      setIsRetrying(false);
       setSearchParams({}, { replace: true });
       setSnippet(s);
       setCode(s.in_progress_code ?? s.broken_code);
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      if (status === 404) {
-        setSnippetError(
-          detail ?? "No more unseen snippets for this topic/difficulty. Ask your instructor to generate more!"
-        );
+      if (status === 504 && retryCount.current < 4) {
+        retryCount.current += 1;
+        willRetry = true;
+        setIsRetrying(true);
+        retryTimer.current = setTimeout(() => fetchSnippet(true), 20_000);
+      } else if (status === 404) {
+        retryCount.current = 0;
+        setIsRetrying(false);
+        setSnippetError(detail ?? "No more unseen snippets for this topic/difficulty. Ask your instructor to generate more!");
+        setSnippet(null);
       } else {
+        retryCount.current = 0;
+        setIsRetrying(false);
         setSnippetError(detail ?? `Error ${status ?? "unknown"}: failed to load snippet.`);
+        setSnippet(null);
       }
-      setSnippet(null);
     } finally {
       if (generatingTimer.current) clearTimeout(generatingTimer.current);
-      setGenerating(false);
-      setSnippetLoading(false);
+      if (!willRetry) {
+        setGenerating(false);
+        setSnippetLoading(false);
+      } else {
+        setGenerating(true);
+      }
     }
+  }, [topic, difficulty]);
+
+  // Cancel any pending retry when the selector changes
+  useEffect(() => {
+    return () => {
+      if (retryTimer.current) {
+        clearTimeout(retryTimer.current);
+        retryTimer.current = null;
+        retryCount.current = 0;
+      }
+    };
   }, [topic, difficulty]);
 
   // Autosave in-progress code
@@ -131,7 +168,7 @@ export default function Problem() {
       if (status) {
         setSubmitError(`Submission failed (${status}): ${detail}`);
       } else if (testResults.length === 0) {
-        // runTests itself threw — surface as a generic error
+        // runTests itself threw - surface as a generic error
         console.error("Run error:", e);
       } else {
         setSubmitError("Submission failed: could not reach server.");
@@ -191,11 +228,19 @@ export default function Problem() {
         <div className="problem-empty">
           {generating ? (
             <>
-              <p><strong>Hang tight — AI is generating a new problem for you.</strong></p>
-              <p className="output-placeholder">This usually takes about 15-30 seconds.</p>
+              <div className="spinner" />
+              <p><strong>Hang tight - AI is generating a new problem for you.</strong></p>
+              <p className="output-placeholder">
+                {isRetrying
+                  ? "Still working on it - will check again automatically..."
+                  : "This usually takes about 15-30 seconds."}
+              </p>
             </>
           ) : (
-            <p>Loading…</p>
+            <>
+              <div className="spinner" />
+              <p>Loading…</p>
+            </>
           )}
         </div>
       )}
@@ -209,7 +254,7 @@ export default function Problem() {
       {snippetError && (
         <div className="problem-empty">
           <p className="form-error">{snippetError}</p>
-          <button className="btn btn-secondary" onClick={fetchSnippet}>
+          <button className="btn btn-secondary" onClick={() => fetchSnippet()}>
             Try Again
           </button>
         </div>
@@ -270,7 +315,7 @@ export default function Problem() {
                   </button>
                 )}
                 {solved && (
-                  <button className="btn btn-secondary" onClick={fetchSnippet}>
+                  <button className="btn btn-secondary" onClick={() => fetchSnippet()}>
                     Next Snippet
                   </button>
                 )}

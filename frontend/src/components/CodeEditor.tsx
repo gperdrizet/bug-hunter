@@ -31,7 +31,7 @@ export default function CodeEditor({
         insertSpaces: true,
       }}
       onChange={(val) => onChange(val ?? "")}
-      // Use CDN — no self-hosted asset configuration needed for Vite
+      // Use CDN - no self-hosted asset configuration needed for Vite
     />
   );
 }
