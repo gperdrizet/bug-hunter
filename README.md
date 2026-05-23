@@ -15,7 +15,7 @@ Educational tool for Python bug-fixing. Students are shown broken Python snippet
 **1. Configure environment**
 
 ```bash
-cp .env.example .env
+cp .env.template .env
 ```
 
 Edit `.env` and set at minimum:

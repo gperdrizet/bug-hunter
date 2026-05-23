@@ -1,4 +1,6 @@
+import smtplib
 import uuid
+from email.mime.text import MIMEText
 
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
@@ -9,6 +11,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.database import get_async_session
 from app.models import User
+
+
+def _send_email(to: str, subject: str, body: str) -> None:
+    """Send a plain-text email via SMTP, or log to console when SMTP is not configured."""
+    if not settings.smtp_host:
+        print(f"[DEV] Email to {to}\nSubject: {subject}\n{body}")
+        return
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = settings.smtp_from
+    msg["To"] = to
+    with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as smtp:
+        smtp.starttls()
+        smtp.login(settings.smtp_user, settings.smtp_password)
+        smtp.send_message(msg)
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
@@ -23,10 +40,31 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         pass  # invite code consumption happens in the custom register route
 
     async def on_after_forgot_password(self, user: User, token: str, request: Request | None = None):
-        print(f"[DEV] Password reset token for {user.email}: {token}")
+        reset_url = f"{settings.app_url}/reset-password?token={token}"
+        _send_email(
+            to=user.email,
+            subject="Reset your Bug Hunter password",
+            body=(
+                f"Hi,\n\n"
+                f"Click the link below to reset your password. "
+                f"This link expires in 1 hour.\n\n"
+                f"{reset_url}\n\n"
+                f"If you didn't request a password reset, you can ignore this email."
+            ),
+        )
 
     async def on_after_request_verify(self, user: User, token: str, request: Request | None = None):
-        print(f"[DEV] Verification token for {user.email}: {token}")
+        verify_url = f"{settings.app_url}/verify-email?token={token}"
+        _send_email(
+            to=user.email,
+            subject="Verify your Bug Hunter email address",
+            body=(
+                f"Hi,\n\n"
+                f"Click the link below to verify your email address.\n\n"
+                f"{verify_url}\n\n"
+                f"If you didn't create a Bug Hunter account, you can ignore this email."
+            ),
+        )
 
 
 async def get_user_manager(user_db=Depends(get_user_db)):

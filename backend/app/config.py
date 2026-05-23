@@ -24,12 +24,15 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "codellama"
 
+    # App URL used for links in emails
+    app_url: str = "http://localhost:5173"
+
     # SMTP (leave empty for console logging in dev)
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_user: str = ""
     smtp_password: str = ""
-    smtp_from: str = "noreply@bughunter.local"
+    smtp_from: str = "admin@bug-hunter.perdrizet.org"
 
 
 settings = Settings()
