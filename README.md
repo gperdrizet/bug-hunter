@@ -97,11 +97,56 @@ Then log in at http://localhost:5173/login and use the **Admin → Generate** pa
 
 ## Deployment
 
-```bash
-cp .env.example .env
-# Edit .env with production values
-docker compose --profile production up -d --build
+### Overview
+
+The project uses two environments hosted on gatekeeper:
+
+| Environment | URL | Port |
+|---|---|---|
+| Staging | `http://100.64.0.1:8507` (Tailnet only) | 8507 |
+| Production | `https://bug-hunter.perdrizet.org` | 8509 (proxied by nginx) |
+
+### CI/CD Workflows
+
+**Tests** (`test.yml`) — runs on every pull request to `main`:
+- `lint-backend`: ruff lint check of the backend
+- `typecheck-frontend`: `npm run build` (runs `tsc -b`)
+
+Both jobs must pass before a PR can be merged.
+
+**Deploy Staging** (`deploy-staging.yml`) — runs automatically on every push to `main`:
+- SSHs into gatekeeper, pulls latest code to `/opt/bug-hunter-staging/`
+- Builds and starts containers with `docker compose -f docker-compose.yml -f docker-compose.staging.yml up --build -d`
+- Health checks `http://100.64.0.1:8507/api/health`
+
+**Deploy Production** (`deploy-prod.yml`) — manual dispatch only:
+- Requires `version` (e.g. `v0.1.0`) and `confirm` set to `deploy`
+- SSHs into gatekeeper, pulls latest code to `/opt/bug-hunter/`
+- Builds and starts containers with `docker compose up --build -d`
+- Health checks `http://127.0.0.1:8509/api/health`
+- Creates a git tag and GitHub release
+
+### Server Setup
+
+The host nginx on gatekeeper reverse proxies `bug-hunter.perdrizet.org` → `127.0.0.1:8509`. The nginx config lives in `vps-infrastructure/configs/nginx/conf.d/bug-hunter.conf`.
+
+Each environment needs a `.env` file on the server (not committed to git):
+
+```
+DATABASE_URL=postgresql+asyncpg://bughunter:bughunter@db:5432/bughunter
+SECRET_KEY=<generate with: python3 -c "import secrets; print(secrets.token_hex(32))">
+LLM_PROVIDER=openai
+OPENAI_BASE_URL=<your LLM endpoint>
+OPENAI_MODEL=<model name>
+OPENAI_API_KEY=<your API key>
+CORS_ORIGINS=["https://bug-hunter.perdrizet.org"]   # or http://100.64.0.1:8507 for staging
 ```
 
-The `docker-compose.override.yml` suppresses the backend and frontend containers during local dev. Pass `--profile production` to include them for a full stack deployment.
+### Required GitHub Secrets
+
+| Secret | Description |
+|---|---|
+| `GATEKEEPER_HOST` | Public IP of the server |
+| `GATEKEEPER_USER` | SSH login username |
+| `GATEKEEPER_SSH_KEY` | Private key with access to gatekeeper (no passphrase) |
 
