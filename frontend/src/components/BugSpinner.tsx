@@ -4,9 +4,9 @@
 // Frame B: Tripod B (R-front, L-mid, R-back) planted/swept-back · Tripod A raised/swept-forward.
 // Leg tips sweep 4 pixels vertically between frames for a visible angle change.
 
-const G = "#00FF41"; // main green
-const D = "#00CC33"; // darker wing stripe
-const E = "#003300"; // eyes
+const G = "#b5cea8"; // muted sage (VS Code number literal green, matches --success)
+const D = "#8aaa7e"; // darker wing stripe
+const E = "#1e2a1e"; // eyes
 
 export default function BugSpinner({ size = 96 }: { size?: number }) {
   return (
