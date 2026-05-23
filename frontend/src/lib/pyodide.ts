@@ -59,6 +59,10 @@ export function isPyodideReady(): boolean {
 export async function runCode(studentCode: string): Promise<{ stdout: string; error: string | null }> {
   const pyodide = await loadPyodide();
 
+  // Pass code as a global so compile() can assign a meaningful filename,
+  // giving traceback line numbers that match what the student sees in the editor.
+  pyodide.globals.set("_student_code", studentCode);
+
   const captureCode = `
 import sys
 import io
@@ -70,7 +74,7 @@ _run_error = None
 
 try:
     with contextlib.redirect_stdout(_stdout_buf):
-${indent(studentCode, 8)}
+        exec(compile(_student_code, "<student code>", "exec"), {"__name__": "__main__"})
 except SystemExit:
     _run_error = "SystemExit raised"
 except Exception:
@@ -103,6 +107,10 @@ export async function runTests(
     let stdout = "";
     let error: string | null = null;
 
+    // Pass code via globals so compile() can use meaningful filenames in tracebacks.
+    pyodide.globals.set("_student_code", studentCode);
+    pyodide.globals.set("_test_code", tc.code);
+
     const captureCode = `
 import sys
 import io
@@ -112,13 +120,13 @@ import traceback
 _stdout_buf = io.StringIO()
 _result_passed = False
 _result_error = None
+_ns = {}
 
 try:
     with contextlib.redirect_stdout(_stdout_buf):
-${indent(studentCode, 8)}
-        
+        exec(compile(_student_code, "<student code>", "exec"), _ns)
     with contextlib.redirect_stdout(_stdout_buf):
-${indent(tc.code, 8)}
+        exec(compile(_test_code, "<test code>", "exec"), _ns)
     _result_passed = True
 except SystemExit:
     _result_error = "SystemExit raised"
@@ -143,10 +151,4 @@ except Exception:
   return results;
 }
 
-function indent(code: string, spaces: number): string {
-  const pad = " ".repeat(spaces);
-  return code
-    .split("\n")
-    .map((line) => pad + line)
-    .join("\n");
-}
+
