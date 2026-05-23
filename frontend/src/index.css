@@ -4,14 +4,14 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #232736;
-  --border: #2e3248;
-  --text: #e2e8f0;
-  --text-muted: #8892a4;
-  --accent: #6c8ef5;
-  --accent-hover: #8ba7ff;
+  --bg: #0b0d0b;
+  --surface: #111611;
+  --surface2: #192019;
+  --border: #263526;
+  --text: #ccd8cc;
+  --text-muted: #697a65;
+  --accent: #1e9e5c;
+  --accent-hover: #28b86b;
   --success: #4ade80;
   --danger: #f87171;
   --warning: #fbbf24;
@@ -35,7 +35,7 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 h1, h2, h3 { margin: 0 0 0.5rem; }
 
 pre {
-  background: #0d0f16;
+  background: #080c08;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.75rem;
@@ -128,8 +128,8 @@ input:focus, select:focus { border-color: var(--accent); }
   letter-spacing: 0.04em;
   border: 1px solid transparent;
 }
-.badge-success { background: #14532d; color: var(--success); border-color: #166534; }
-.badge-pending { background: #1c1917; color: var(--warning); border-color: #78350f; }
+.badge-success { background: #0d2e1a; color: var(--success); border-color: #1a5c30; }
+.badge-pending { background: #1e1600; color: var(--warning); border-color: #6b4800; }
 .badge-link { text-decoration: none; cursor: pointer; }
 .badge-link:hover { filter: brightness(1.2); }
 .badge-topic { background: var(--surface2); color: var(--accent); border-color: var(--border); }
@@ -303,7 +303,7 @@ input:focus, select:focus { border-color: var(--accent); }
 .run-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .output-placeholder { color: var(--text-muted); font-size: 13px; line-height: 1.6; }
 
-.code-output { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.code-output { background: #080c08; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
 .code-output-label { font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.05em; }
 .code-output-stdout { margin: 0; padding: 0.6rem 0.75rem; font-size: 13px; font-family: monospace; white-space: pre-wrap; word-break: break-all; color: var(--text); }
 .code-output-error { margin: 0; padding: 0.6rem 0.75rem; font-size: 13px; font-family: monospace; white-space: pre-wrap; word-break: break-all; color: #f87171; }
@@ -332,8 +332,8 @@ input:focus, select:focus { border-color: var(--accent); }
   border-radius: 6px;
   font-size: 13px;
 }
-.status-pass { background: #14532d; color: var(--success); }
-.status-fail { background: #450a0a; color: var(--danger); }
+.status-pass { background: #0d2e1a; color: var(--success); }
+.status-fail { background: #2d0a0a; color: var(--danger); }
 
 .test-list { display: flex; flex-direction: column; gap: 0.4rem; }
 .test-item {
@@ -342,8 +342,8 @@ input:focus, select:focus { border-color: var(--accent); }
   font-size: 12px;
   border: 1px solid var(--border);
 }
-.test-pass { background: #052e16; border-color: #166534; }
-.test-fail { background: #2d0707; border-color: #991b1b; }
+.test-pass { background: #061a0f; border-color: #1a5c30; }
+.test-fail { background: #1e0808; border-color: #7a1515; }
 .test-name { display: flex; align-items: center; gap: 0.4rem; font-weight: 500; margin-bottom: 0.25rem; }
 .test-icon { font-style: normal; }
 .test-output { margin: 0.25rem 0 0; color: var(--text-muted); }
@@ -429,8 +429,8 @@ input:focus, select:focus { border-color: var(--accent); }
 .job-detail { font-size: 12px; color: var(--text-muted); margin: 0.25rem 0 0; }
 .job-error { font-size: 12px; color: var(--danger); margin: 0.25rem 0 0; }
 
-.job-badge-pending { background: #1c1917; color: var(--warning); border-color: #78350f; }
-.job-badge-running { background: #1e3a5f; color: #60a5fa; border-color: #1d4ed8; }
-.job-badge-done { background: #14532d; color: var(--success); border-color: #166534; }
-.job-badge-failed { background: #450a0a; color: var(--danger); border-color: #991b1b; }
+.job-badge-pending { background: #1e1600; color: var(--warning); border-color: #6b4800; }
+.job-badge-running { background: #0d2e1a; color: var(--accent-hover); border-color: #1a5c30; }
+.job-badge-done { background: #0d2e1a; color: var(--success); border-color: #1a5c30; }
+.job-badge-failed { background: #2d0a0a; color: var(--danger); border-color: #7a1515; }
 
