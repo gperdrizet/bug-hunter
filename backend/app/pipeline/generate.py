@@ -98,7 +98,7 @@ Code style — follow these rules exactly:
 - Add a blank line before for/while loops inside functions
 - Format list/tuple literals with 4 or more elements across multiple lines, one item per line
 - Add a blank line immediately after the `if __name__ == '__main__':` header
-- Add blank lines between logical sections (e.g. between assert statements) in the __main__ block
+- In the __main__ block, group related statements together with NO blank lines between them (e.g. consecutive asserts on the same function belong together); only add a blank line between distinct logical sections
 - Do NOT add # type: ignore or any other inline pragma comments
 
 Return ONLY the Python code, no explanation, no markdown fences."""
