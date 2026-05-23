@@ -53,16 +53,21 @@ jobs:
             "$USER@$HOST" bash -s << 'REMOTE'
           set -euo pipefail
           DEPLOY_DIR=/opt/bug-hunter
+          VERSION="v${{ github.event.inputs.version }}"
 
           if [ ! -d "$DEPLOY_DIR/.git" ]; then
             git clone https://github.com/gperdrizet/bug-hunter.git "$DEPLOY_DIR"
-          else
-            git -C "$DEPLOY_DIR" pull --ff-only
           fi
+
+          git -C "$DEPLOY_DIR" fetch --tags
+          git -C "$DEPLOY_DIR" checkout "$VERSION"
 
           cd "$DEPLOY_DIR"
 
-          docker compose up --build -d --remove-orphans
+          docker compose \
+            -f docker-compose.yml \
+            -f docker-compose.prod.yml \
+            up --build -d --remove-orphans
 
           sleep 20
           curl -fsS http://127.0.0.1:8509/api/health | grep '"status":"ok"'
