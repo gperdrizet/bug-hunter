@@ -136,6 +136,7 @@ Introduce EXACTLY ONE bug into the code. The bug must either:
 The bug should be realistic — the kind a student might write by mistake (e.g., wrong operator, off-by-one, incorrect variable name, missing return, wrong comparison, wrong indentation).
 
 Do NOT change function signatures or remove functions — the tests must be able to call the same functions.
+Do NOT add any comments hinting at the bug location (e.g. no "# bug", "# error", "# changed", or similar). The student must find it themselves.
 
 Return ONLY the modified Python code, no explanation, no markdown fences."""
 
