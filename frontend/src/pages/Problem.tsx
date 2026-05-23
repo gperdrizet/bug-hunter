@@ -254,7 +254,7 @@ export default function Problem() {
       {snippetError && (
         <div className="problem-empty">
           <p className="form-error">{snippetError}</p>
-          <button className="btn btn-secondary" onClick={fetchSnippet}>
+          <button className="btn btn-secondary" onClick={() => fetchSnippet()}>
             Try Again
           </button>
         </div>
@@ -315,7 +315,7 @@ export default function Problem() {
                   </button>
                 )}
                 {solved && (
-                  <button className="btn btn-secondary" onClick={fetchSnippet}>
+                  <button className="btn btn-secondary" onClick={() => fetchSnippet()}>
                     Next Snippet
                   </button>
                 )}
