@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import CodeEditor from "../components/CodeEditor";
 import TestResults from "../components/TestResults";
 import SnippetSelector from "../components/SnippetSelector";
+import BugSpinner from "../components/BugSpinner";
 import type { SnippetResponse, TestResult } from "../types";
 
 const AUTOSAVE_DELAY_MS = 1500;
@@ -228,7 +229,7 @@ export default function Problem() {
         <div className="problem-empty">
           {generating ? (
             <>
-              <div className="spinner" />
+              <BugSpinner size={96} />
               <p><strong>Hang tight - AI is generating a new problem for you.</strong></p>
               <p className="output-placeholder">
                 {isRetrying
@@ -238,7 +239,7 @@ export default function Problem() {
             </>
           ) : (
             <>
-              <div className="spinner" />
+              <BugSpinner size={64} />
               <p>Loading…</p>
             </>
           )}

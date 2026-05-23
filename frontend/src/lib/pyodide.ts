@@ -63,6 +63,7 @@ export async function runCode(studentCode: string): Promise<{ stdout: string; er
 import sys
 import io
 import contextlib
+import traceback
 
 _stdout_buf = io.StringIO()
 _run_error = None
@@ -70,10 +71,10 @@ _run_error = None
 try:
     with contextlib.redirect_stdout(_stdout_buf):
 ${indent(studentCode, 8)}
-except Exception as e:
-    _run_error = f"{type(e).__name__}: {e}"
 except SystemExit:
     _run_error = "SystemExit raised"
+except Exception:
+    _run_error = traceback.format_exc()
 `;
 
   try {
@@ -106,6 +107,7 @@ export async function runTests(
 import sys
 import io
 import contextlib
+import traceback
 
 _stdout_buf = io.StringIO()
 _result_passed = False
@@ -118,12 +120,10 @@ ${indent(studentCode, 8)}
     with contextlib.redirect_stdout(_stdout_buf):
 ${indent(tc.code, 8)}
     _result_passed = True
-except AssertionError as e:
-    _result_error = f"AssertionError: {e}"
-except Exception as e:
-    _result_error = f"{type(e).__name__}: {e}"
 except SystemExit:
     _result_error = "SystemExit raised"
+except Exception:
+    _result_error = traceback.format_exc()
 `;
 
     try {
