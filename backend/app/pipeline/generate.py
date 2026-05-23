@@ -91,6 +91,16 @@ Difficulty: {difficulty}
 
 Important: do NOT include unrelated functions. A snippet about multiplication must not contain string-formatting, greeting, or other unrelated logic. Keep the scope tight.
 
+Code style — follow these rules exactly:
+- Use single quotes for all string literals (never double quotes), including the __main__ guard
+- Add a blank line after the class name line, before __init__
+- Add blank lines around if/else/elif branches inside methods and loops — each branch gets its own breathing room
+- Add a blank line before for/while loops inside functions
+- Format list/tuple literals with 4 or more elements across multiple lines, one item per line
+- Add a blank line immediately after the `if __name__ == '__main__':` header
+- Add blank lines between logical sections (e.g. between assert statements) in the __main__ block
+- Do NOT add # type: ignore or any other inline pragma comments
+
 Return ONLY the Python code, no explanation, no markdown fences."""
 
 PASS2_PROMPT = """You are generating test cases for an educational Python platform.
@@ -136,6 +146,7 @@ Introduce EXACTLY ONE bug into the code. The bug must either:
 The bug should be realistic — the kind a student might write by mistake (e.g., wrong operator, off-by-one, incorrect variable name, missing return, wrong comparison, wrong indentation).
 
 Do NOT change function signatures or remove functions — the tests must be able to call the same functions.
+Do NOT add any comments hinting at the bug location (e.g. no "# bug", "# error", "# changed", or similar). The student must find it themselves.
 
 Return ONLY the modified Python code, no explanation, no markdown fences."""
 
