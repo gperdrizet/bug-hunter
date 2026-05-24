@@ -53,14 +53,12 @@ jobs:
             "$USER@$HOST" bash -s << 'REMOTE'
           set -euo pipefail
           DEPLOY_DIR=/opt/bug-hunter
-          VERSION="v${{ github.event.inputs.version }}"
 
           if [ ! -d "$DEPLOY_DIR/.git" ]; then
             git clone https://github.com/gperdrizet/bug-hunter.git "$DEPLOY_DIR"
           fi
 
-          git -C "$DEPLOY_DIR" fetch --tags
-          git -C "$DEPLOY_DIR" checkout "$VERSION"
+          git -C "$DEPLOY_DIR" pull --ff-only
 
           cd "$DEPLOY_DIR"
 
