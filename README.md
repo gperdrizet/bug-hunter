@@ -1,5 +1,9 @@
 # Bug Hunter
 
+[![Tests](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml)
+[![Deploy Staging](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml)
+[![Deploy Production](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml)
+
 Educational tool for Python bug-fixing. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Code samples generated across different topics and difficulty levels with few-shot prompting.
 
 ## Development
