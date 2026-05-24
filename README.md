@@ -1,6 +1,6 @@
 # Bug Hunter
 
-Educational tool for Python bug-fixing. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution.
+Educational tool for Python bug-fixing. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Code samples generated across different topics and difficulty levels with few-shot prompting.
 
 ## Development
 
