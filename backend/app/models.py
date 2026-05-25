@@ -81,6 +81,7 @@ class Snippet(Base):
     topic: Mapped[Topic] = mapped_column(Enum(Topic, native_enum=False), nullable=False, index=True)
     difficulty: Mapped[Difficulty] = mapped_column(Enum(Difficulty, native_enum=False), nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(256), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     working_code: Mapped[str] = mapped_column(Text, nullable=False)
     broken_code: Mapped[str] = mapped_column(Text, nullable=False)
     test_cases: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)

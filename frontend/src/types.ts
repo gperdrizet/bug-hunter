@@ -35,6 +35,7 @@ export interface SnippetResponse {
   topic: string;
   difficulty: string;
   title: string;
+  description: string | null;
   broken_code: string;
   test_cases: TestCase[];
   in_progress_code: string | null;
@@ -75,6 +76,7 @@ export interface SnippetAdminOut {
   topic: string;
   difficulty: string;
   title: string;
+  description: string | null;
   working_code: string;
   broken_code: string;
   test_cases: TestCase[];

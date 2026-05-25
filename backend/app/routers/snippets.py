@@ -20,6 +20,7 @@ class SnippetResponse(BaseModel):
     topic: str
     difficulty: str
     title: str
+    description: str | None
     broken_code: str
     test_cases: list[dict]
     in_progress_code: str | None
@@ -101,6 +102,7 @@ async def get_next_snippet(
         topic=snippet.topic.value,
         difficulty=snippet.difficulty.value,
         title=snippet.title,
+        description=snippet.description,
         broken_code=snippet.broken_code,
         test_cases=snippet.test_cases,
         in_progress_code=record.in_progress_code,
@@ -133,6 +135,7 @@ async def get_snippet_by_id(
         topic=snippet.topic.value,
         difficulty=snippet.difficulty.value,
         title=snippet.title,
+        description=snippet.description,
         broken_code=snippet.broken_code,
         test_cases=snippet.test_cases,
         in_progress_code=record.in_progress_code,
