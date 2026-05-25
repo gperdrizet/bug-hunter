@@ -285,6 +285,15 @@ input:focus, select:focus { border-color: var(--accent); }
   flex-wrap: wrap;
 }
 .snippet-title { font-weight: 600; font-size: 14px; }
+.snippet-description {
+  margin: 0;
+  padding: 0.4rem 1rem;
+  font-size: 13px;
+  color: var(--text2);
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
 
 .editor-output-split {
   display: grid;

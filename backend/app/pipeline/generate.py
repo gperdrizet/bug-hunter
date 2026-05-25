@@ -92,16 +92,23 @@ Difficulty: {difficulty}
 Important: do NOT include unrelated functions. A snippet about multiplication must not contain string-formatting, greeting, or other unrelated logic. Keep the scope tight.
 
 Code style — follow these rules exactly:
-- Use single quotes for all string literals (never double quotes), including the __main__ guard
-- Add a blank line after the class name line, before __init__
+- Use single quotes for ALL string literals without exception: regular strings, f-strings, and docstrings (use '''...''' for docstrings, never \"\"\"...\"\"\")
+- Separate top-level function and class definitions with exactly ONE blank line
+- After the docstring inside a function, add a blank line before the first line of the function body; if a function has no docstring, add a blank line immediately after the def line before the body starts
 - Add blank lines around if/else/elif branches inside methods and loops — each branch gets its own breathing room
-- Add a blank line before for/while loops inside functions
+- Add a blank line before every for/while loop
+- Add a blank line before every return statement (unless the function body is only the return line) — this applies even when the return immediately follows a loop or conditional block
+- Add a blank line after the class name line, before __init__
 - Format list/tuple literals with 4 or more elements across multiple lines, one item per line
 - Add a blank line immediately after the `if __name__ == '__main__':` header
-- In the __main__ block, group related statements together with NO blank lines between them (e.g. consecutive asserts on the same function belong together); only add a blank line between distinct logical sections
+- In the __main__ block, group related statements together with NO blank lines between them (e.g. consecutive asserts on the same function belong together with zero blank lines between them); add exactly ONE blank line between distinct logical sections (e.g. between the assert group and the final print)
 - Do NOT add # type: ignore or any other inline pragma comments
 
-Return ONLY the Python code, no explanation, no markdown fences."""
+As the very first line of your output, write a single # comment that describes in plain English what the snippet demonstrates — one sentence, no period needed, e.g.:
+# Implement a function that finds the greatest common divisor of two integers using Euclid's algorithm
+
+Then write the Python code on the lines that follow.
+Return ONLY the Python code (including the opening comment), no explanation, no markdown fences."""
 
 PASS2_PROMPT = """You are generating test cases for an educational Python platform.
 
@@ -172,8 +179,9 @@ async def generate_snippet(
     logger.info("[pipeline] starting generation: topic=%s difficulty=%s provider=%s", topic, difficulty, provider.provider_name)
 
     # ---- Pass 1: Working code ------------------------------------------------
-    working_code = await _pass1_generate_working_code(provider, topic, difficulty, existing_snippets or [])
-    logger.info("[pipeline] pass 1 done (%d chars)", len(working_code))
+    raw_code = await _pass1_generate_working_code(provider, topic, difficulty, existing_snippets or [])
+    description, working_code = _extract_description(raw_code)
+    logger.info("[pipeline] pass 1 done (%d chars, description=%r)", len(working_code), description)
 
     # ---- Pass 2: Test cases --------------------------------------------------
     test_cases = await _pass2_generate_tests(provider, working_code)
@@ -191,6 +199,7 @@ async def generate_snippet(
         "topic": topic,
         "difficulty": difficulty,
         "title": title,
+        "description": description,
         "working_code": working_code,
         "broken_code": broken_code,
         "test_cases": test_cases,
@@ -282,6 +291,16 @@ async def _pass3_generate_broken(provider: LLMProvider, working_code: str, test_
             prompt = PASS3_PROMPT.format(code=working_code, tests=tests_str) + \
                 "\n\nYour previous broken version still passed all tests. Make a more impactful bug."
     raise RuntimeError(f"Pass 3 failed after {MAX_RETRIES} attempts")
+
+
+def _extract_description(code: str) -> tuple[str, str]:
+    """Strip the leading # description comment and return (description, remaining_code)."""
+    lines = code.splitlines()
+    if lines and lines[0].startswith('#'):
+        description = lines[0].lstrip('#').strip()
+        remaining = '\n'.join(lines[1:]).lstrip('\n')
+        return description, remaining
+    return "", code
 
 
 def _extract_title(code: str, topic: Topic, difficulty: Difficulty) -> str:

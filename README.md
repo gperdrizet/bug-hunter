@@ -154,3 +154,23 @@ CORS_ORIGINS=["https://bug-hunter.perdrizet.org"]   # or http://100.64.0.1:8507 
 | `GATEKEEPER_USER` | SSH login username |
 | `GATEKEEPER_SSH_KEY` | Private key with access to gatekeeper (no passphrase) |
 
+### Creating the first admin account (production)
+
+The prod DB is not exposed externally, so all DB access goes through `docker exec`. SSH into gatekeeper and run:
+
+```bash
+# Insert a one-time invite code
+docker exec bug-hunter-db-1 psql -U bughunter -d bughunter \
+  -c "INSERT INTO invite_codes (code, is_active) VALUES ('admin-setup', true);"
+
+# Register the admin account (replace YOUR_PASSWORD)
+curl -s -X POST http://127.0.0.1:8509/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@bug-hunter.perdrizet.org","password":"YOUR_PASSWORD","invite_code":"admin-setup"}' \
+  | python3 -m json.tool
+
+# Promote to admin
+docker exec bug-hunter-db-1 psql -U bughunter -d bughunter \
+  -c "UPDATE \"user\" SET is_admin = true, is_superuser = true WHERE email = 'admin@bug-hunter.perdrizet.org';"
+```
+

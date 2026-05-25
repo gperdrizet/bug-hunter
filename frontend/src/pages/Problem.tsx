@@ -273,6 +273,10 @@ export default function Problem() {
             {solved && <span className="badge badge-success">Solved!</span>}
           </div>
 
+          {snippet.description && (
+            <p className="snippet-description">{snippet.description}</p>
+          )}
+
           {/* Editor + output split */}
           <div className="editor-output-split">
             <div className="editor-pane">

@@ -199,6 +199,7 @@ class SnippetAdminOut(BaseModel):
     topic: str
     difficulty: str
     title: str
+    description: str | None
     working_code: str
     broken_code: str
     test_cases: list[dict]
@@ -210,6 +211,7 @@ class SnippetAdminOut(BaseModel):
 
 class UpdateSnippetRequest(BaseModel):
     title: str | None = None
+    description: str | None = None
     working_code: str | None = None
     broken_code: str | None = None
     test_cases: list[dict] | None = None
@@ -220,6 +222,7 @@ class CreateSnippetRequest(BaseModel):
     topic: Topic
     difficulty: Difficulty
     title: str
+    description: str | None = None
     working_code: str
     broken_code: str
     test_cases: list[dict]
@@ -252,6 +255,7 @@ async def create_snippet_manual(
         topic=body.topic,
         difficulty=body.difficulty,
         title=body.title,
+        description=body.description,
         working_code=body.working_code,
         broken_code=body.broken_code,
         test_cases=body.test_cases,
@@ -276,7 +280,7 @@ async def update_snippet(
     snippet = result.scalar_one_or_none()
     if snippet is None:
         raise HTTPException(status_code=404, detail="Snippet not found.")
-    for field in ("title", "working_code", "broken_code", "test_cases", "is_active"):
+    for field in ("title", "description", "working_code", "broken_code", "test_cases", "is_active"):
         val = getattr(body, field)
         if val is not None:
             setattr(snippet, field, val)
@@ -379,6 +383,7 @@ def _snippet_out(s: Snippet) -> SnippetAdminOut:
         topic=s.topic.value,
         difficulty=s.difficulty.value,
         title=s.title,
+        description=s.description,
         working_code=s.working_code,
         broken_code=s.broken_code,
         test_cases=s.test_cases,
