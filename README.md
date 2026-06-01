@@ -6,7 +6,7 @@
 
 Educational tool for Python bug-fixing. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Code samples generated across different topics and difficulty levels with few-shot prompting.
 
-## Development
+## Local development
 
 ### Prerequisites
 
@@ -31,7 +31,7 @@ Edit `.env` and set at minimum:
 **2. Start PostgreSQL**
 
 ```bash
-docker compose up db -d
+docker compose -f docker-compose.yml -f docker-compose.local.yml up db -d
 ```
 
 The `docker-compose.override.yml` exposes the DB on `localhost:5433` (port 5432 is reserved for other services on this machine).
