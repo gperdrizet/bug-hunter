@@ -1,4 +1,4 @@
-# Local development overrides — docker compose uses this automatically alongside docker-compose.yml
+# Local development overrides — use with: docker compose -f docker-compose.yml -f docker-compose.local.yml up db -d
 # Exposes DB port so the locally-running backend can reach it
 services:
   db:

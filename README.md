@@ -6,7 +6,53 @@
 
 Educational tool for Python bug-fixing. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Code samples generated across different topics and difficulty levels with few-shot prompting.
 
-## Development
+## Using Bug Hunter
+
+### Getting access
+
+Bug Hunter is currently in closed beta. To request access, email **admin@bug-hunter.perdrizet.org**. Once you receive an invite code, register at:
+
+**https://bug-hunter.perdrizet.org/register**
+
+Enter your email, a password, and the invite code. Once registered, log in at **https://bug-hunter.perdrizet.org/login**.
+
+### How to use it
+
+**1. Pick a topic and difficulty**
+
+Use the dropdowns at the top of the page to choose a Python topic (e.g. *Loops*, *Functions*, *Classes*) and a difficulty level (*Easy*, *Medium*, or *Hard*), then click **New Snippet**.
+
+**2. Find the bug**
+
+You'll be shown a broken Python snippet in the editor. Read the description beneath the title to understand what the code is supposed to do, then find and fix the bug. All editing happens in the browser - no local Python installation needed.
+
+**3. Test your fix**
+
+- **Run Code**: executes your code and shows its output. Use this to check your logic as you work.
+- **Submit Solution**: runs your fix against hidden test cases. All tests must pass to mark the problem solved.
+
+**4. Stuck?**
+
+Click **Give Up** to reveal the working solution, then click **Next Snippet** to move on.
+
+### Topics covered
+
+| Topic | Topic |
+|---|---|
+| Data Types | Comprehensions |
+| Data Structures | Decorators |
+| Operators | Generators |
+| Loops | File I/O |
+| Functions | Error Handling |
+| Classes | Exceptions |
+
+### Tracking progress
+
+Your progress is saved automatically. Return to the **Dashboard** at any time to see your solve rate by topic.
+
+---
+
+## Local development
 
 ### Prerequisites
 
@@ -31,10 +77,10 @@ Edit `.env` and set at minimum:
 **2. Start PostgreSQL**
 
 ```bash
-docker compose up db -d
+docker compose -f docker-compose.yml -f docker-compose.local.yml up db -d
 ```
 
-The `docker-compose.override.yml` exposes the DB on `localhost:5433` (port 5432 is reserved for other services on this machine).
+The `docker-compose.local.yml` exposes the DB on `localhost:5433` (port 5432 is reserved for other services on this machine).
 
 **3. Install backend dependencies**
 
@@ -80,9 +126,6 @@ Open **http://localhost:5173**. The Vite dev server proxies all `/api/*` request
 The backend API docs are available at **http://localhost:8000/docs**.
 
 ### Creating the first admin account
-
-```bash
-# Insert a test invite code directly into the DB
 PGPASSWORD=bughunter psql -h localhost -p 5433 -U bughunter bughunter \
   -c "INSERT INTO invite_codes (code, is_active) VALUES ('test123', true);"
 
@@ -110,7 +153,7 @@ The project uses two environments hosted on gatekeeper:
 | Staging | `http://100.64.0.1:8507` (Tailnet only) | 8507 |
 | Production | `https://bug-hunter.perdrizet.org` | 8509 (proxied by nginx) |
 
-### CI/CD Workflows
+### CI/CD workflows
 
 **Tests** (`test.yml`): runs on every pull request to `main`:
 - `lint-backend`: ruff lint check of the backend
@@ -130,7 +173,7 @@ Both jobs must pass before a PR can be merged.
 - Health checks `http://127.0.0.1:8509/api/health`
 - Creates a git tag and GitHub release
 
-### Server Setup
+### Server setup
 
 The host nginx on gatekeeper reverse proxies `bug-hunter.perdrizet.org` → `127.0.0.1:8509`. The nginx config lives in `vps-infrastructure/configs/nginx/conf.d/bug-hunter.conf`.
 
@@ -146,7 +189,7 @@ OPENAI_API_KEY=<your API key>
 CORS_ORIGINS=["https://bug-hunter.perdrizet.org"]   # or http://100.64.0.1:8507 for staging
 ```
 
-### Required GitHub Secrets
+### Required GitHub secrets
 
 | Secret | Description |
 |---|---|
