@@ -40,6 +40,8 @@ jobs:
             git -C "$DEPLOY_DIR" pull --ff-only
           fi
 
+          echo "staging" > "$DEPLOY_DIR/VERSION"
+
           cd "$DEPLOY_DIR"
 
           COMPOSE_PROJECT_NAME=bug-hunter-staging docker compose \
@@ -48,7 +50,7 @@ jobs:
             up --build -d --remove-orphans
 
           sleep 20
-          curl -fsS http://100.64.0.1:8507/api/health | grep '"status":"ok"'
+          curl -fsS http://100.64.0.1:8507/api/health | grep -q '"ok"'
           echo "Staging deploy OK"
           REMOTE
 

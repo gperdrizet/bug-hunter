@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { getNextSnippet, getSnippetById, saveInProgressCode, submitAttempt } from "../lib/api";
 import { loadPyodide, runCode, runTests } from "../lib/pyodide";
 import { useAuth } from "../context/AuthContext";
+import { useVersion } from "../lib/useVersion";
 import CodeEditor from "../components/CodeEditor";
 import TestResults from "../components/TestResults";
 import SnippetSelector from "../components/SnippetSelector";
@@ -68,6 +69,7 @@ function useGeneratingMessage(active: boolean): string {
 
 export default function Problem() {
   const { user, logout } = useAuth();
+  const version = useVersion();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Selector state
@@ -274,6 +276,7 @@ export default function Problem() {
           loading={snippetLoading}
         />
         <div className="header-right">
+          {version && <span className="version-tag">{version}</span>}
           <span className="welcome-small">{user?.display_name ?? user?.email}</span>
           <button className="btn btn-ghost" onClick={logout}>
             Sign Out

@@ -1,8 +1,10 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useVersion } from "../../lib/useVersion";
 
 export default function AdminLayout() {
   const { user, logout } = useAuth();
+  const version = useVersion();
 
   return (
     <div className="admin-layout">
@@ -38,6 +40,7 @@ export default function AdminLayout() {
         </nav>
         <div className="admin-footer">
           <span>{user?.display_name ?? user?.email}</span>
+          {version && <span className="version-tag">{version}</span>}
           <button className="btn btn-ghost" onClick={logout}>
             Sign Out
           </button>
