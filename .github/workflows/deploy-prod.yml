@@ -60,7 +60,7 @@ jobs:
 
           git -C "$DEPLOY_DIR" pull --ff-only
 
-          echo "v${{ github.event.inputs.version }}" > "$DEPLOY_DIR/VERSION"
+          echo "v${{ github.event.inputs.version }}" > "$DEPLOY_DIR/backend/VERSION"
 
           cd "$DEPLOY_DIR"
 

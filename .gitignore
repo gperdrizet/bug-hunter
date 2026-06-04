@@ -1,5 +1,6 @@
 .env
 VERSION
+backend/VERSION
 backend/.venv
 backend/__pycache__
 backend/.ruff_cache

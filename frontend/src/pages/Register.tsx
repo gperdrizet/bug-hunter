@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register as apiRegister } from "../lib/api";
+import { useVersion } from "../lib/useVersion";
 
 export default function Register() {
   const navigate = useNavigate();
+  const version = useVersion();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -88,6 +90,7 @@ export default function Register() {
         <p className="auth-link">
           Already have an account? <Link to="/login">Sign In</Link>
         </p>
+        {version && <p className="auth-version">{version}</p>}
       </div>
     </div>
   );

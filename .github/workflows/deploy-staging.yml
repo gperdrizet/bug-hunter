@@ -40,7 +40,7 @@ jobs:
             git -C "$DEPLOY_DIR" pull --ff-only
           fi
 
-          echo "staging" > "$DEPLOY_DIR/VERSION"
+          echo "staging" > "$DEPLOY_DIR/backend/VERSION"
 
           cd "$DEPLOY_DIR"
 
