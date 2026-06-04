@@ -11,6 +11,61 @@ import type { SnippetResponse, TestResult } from "../types";
 
 const AUTOSAVE_DELAY_MS = 1500;
 
+const GENERATION_MESSAGES = [
+  // Real steps
+  "Prompting the AI to write a working Python snippet...",
+  "Verifying the generated code actually runs...",
+  "Generating test cases to prove it works...",
+  "Running the tests against the working code...",
+  "Asking the AI to introduce a realistic bug...",
+  "Confirming the bug breaks at least one test...",
+  // Humorous
+  "Bribing the hamster that powers the GPU...",
+  "Negotiating with the AI to write something harder than Hello World...",
+  "Asking the AI nicely not to use bubble sort again...",
+  "Convincing the model that off-by-one errors count as bugs...",
+  "Checking that the bug is sneaky enough (but not too sneaky)...",
+  "Pretending we planned all three passes from the start...",
+  "Waiting for the AI to stop second-guessing itself...",
+  "Running the code in a sandbox so it can't escape...",
+  "Making sure the AI didn't just write `pass` and call it a day...",
+  "Triple-checking that the bug isn't just a missing semicolon...",
+];
+
+function useGeneratingMessage(active: boolean): string {
+  const [index, setIndex] = useState(0);
+  const [shuffled, setShuffled] = useState<string[]>([]);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!active) {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      return;
+    }
+
+    // Build a sequence: real steps first, then shuffle funny ones in
+    const real = GENERATION_MESSAGES.slice(0, 6);
+    const funny = [...GENERATION_MESSAGES.slice(6)].sort(() => Math.random() - 0.5);
+    const sequence: string[] = [];
+    real.forEach((msg, i) => {
+      sequence.push(msg);
+      if (funny[i]) sequence.push(funny[i]);
+    });
+    setShuffled(sequence);
+    setIndex(0);
+
+    const tick = () => {
+      setIndex((prev) => (prev + 1) % sequence.length);
+      timerRef.current = setTimeout(tick, 4000);
+    };
+    timerRef.current = setTimeout(tick, 4000);
+
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [active]);
+
+  return shuffled[index] ?? GENERATION_MESSAGES[0];
+}
+
 export default function Problem() {
   const { user, logout } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,6 +81,8 @@ export default function Problem() {
   const [snippetError, setSnippetError] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+
+  const generatingMessage = useGeneratingMessage(generating);
 
   // Pyodide state
   const [pyodideReady, setPyodideReady] = useState(false);
@@ -230,11 +287,11 @@ export default function Problem() {
           {generating ? (
             <>
               <BugSpinner size={96} />
-              <p><strong>Hang tight - AI is generating a new problem for you.</strong></p>
+              <p><strong>Hang tight — generating a new problem for you.</strong></p>
               <p className="output-placeholder">
                 {isRetrying
-                  ? "Still working on it - will check again automatically..."
-                  : "This usually takes about 15-30 seconds."}
+                  ? "Still working on it — will check again automatically..."
+                  : generatingMessage}
               </p>
             </>
           ) : (

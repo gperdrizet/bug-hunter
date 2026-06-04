@@ -1,10 +1,12 @@
 # Bug Hunter
 
-[![Tests](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml)
-[![Deploy Staging](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml)
-[![Deploy Production](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml)
+[![CI](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml)
+[![Deploy: staging](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml)
+[![Deploy: production](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml)
 
-Educational tool for Python bug-fixing. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Code samples generated across different topics and difficulty levels with few-shot prompting.
+Simple educational tool for Python coding. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Each snippet is produced by a three-pass LLM pipeline: the first pass generates a working solution, the second generates and verifies test cases against it, and the third introduces a bug and confirms it breaks at least one test.
+
+![Bug Hunter screenshot](docs/screenshot.png)
 
 ## Using Bug Hunter
 
@@ -14,13 +16,12 @@ Bug Hunter is currently in closed beta. To request access, email **admin@bug-hun
 
 **https://bug-hunter.perdrizet.org/register**
 
-Enter your email, a password, and the invite code. Once registered, log in at **https://bug-hunter.perdrizet.org/login**.
 
 ### How to use it
 
 **1. Pick a topic and difficulty**
 
-Use the dropdowns at the top of the page to choose a Python topic (e.g. *Loops*, *Functions*, *Classes*) and a difficulty level (*Easy*, *Medium*, or *Hard*), then click **New Snippet**.
+Use the dropdowns at the top of the page to choose a Python topic (e.g. *Loops*, *Functions*, *Classes*) and a difficulty level (*Easy*, *Medium*, or *Hard*), then click **New Snippet** (**Note:** snippet generation involves minimum three inference passes and may take up to 3 minutes depending on the length and complexity of the requested snippet).
 
 **2. Find the bug**
 
@@ -165,4 +166,12 @@ Both jobs must pass before a PR can be merged.
 **Deploy Staging** (`deploy-staging.yml`): runs automatically on every push to `main`. Builds and starts containers on the staging server and runs a health check.
 
 **Deploy Production** (`deploy-prod.yml`): manual dispatch only. Requires a `version` (e.g. `v0.1.0`) and `confirm` set to `deploy`. Builds and starts containers, health checks, then creates a git tag and GitHub release.
+
+## Contributing
+
+Bug reports, feature suggestions, and pull requests are welcome. Please open an issue first to discuss significant changes before submitting a PR. All pull requests must pass CI checks before they can be merged.
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
 
