@@ -280,7 +280,7 @@ export default function Problem() {
       {snippetLoading && (
         <div className="problem-empty">
           <BugSpinner size={96} />
-          <p><strong>Hang tight — generating a new problem for you.</strong></p>
+          <p><strong>Hang tight, generating a new problem for you.</strong></p>
           <p className="output-placeholder">
             {isRetrying
               ? "Still working on it — will check again automatically..."
