@@ -21,7 +21,7 @@ Bug Hunter is currently in closed beta. To request access, email **admin@bug-hun
 
 **1. Pick a topic and difficulty**
 
-Use the dropdowns at the top of the page to choose a Python topic (e.g. *Loops*, *Functions*, *Classes*) and a difficulty level (*Easy*, *Medium*, or *Hard*), then click **New Snippet** (note: ).
+Use the dropdowns at the top of the page to choose a Python topic (e.g. *Loops*, *Functions*, *Classes*) and a difficulty level (*Easy*, *Medium*, or *Hard*), then click **New Snippet** (**Note:** snippet generation involves minimum three inference passes and may take up to 3 minutes depending on the length and complexity of the requested snippet).
 
 **2. Find the bug**
 
