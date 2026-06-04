@@ -81,10 +81,9 @@ export default function Problem() {
   const [code, setCode] = useState("");
   const [snippetLoading, setSnippetLoading] = useState(false);
   const [snippetError, setSnippetError] = useState<string | null>(null);
-  const [generating, setGenerating] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
 
-  const generatingMessage = useGeneratingMessage(generating);
+  const generatingMessage = useGeneratingMessage(snippetLoading);
 
   // Pyodide state
   const [pyodideReady, setPyodideReady] = useState(false);
@@ -128,7 +127,6 @@ export default function Problem() {
       setResults([]);
       setCodeOutput(null);
       setSolved(false);
-      setGenerating(true);
     }
     setSnippetError(null);
     setSnippetLoading(true);
@@ -162,10 +160,7 @@ export default function Problem() {
       }
     } finally {
       if (!willRetry) {
-        setGenerating(false);
         setSnippetLoading(false);
-      } else {
-        setGenerating(true);
       }
     }
   }, [topic, difficulty]);
@@ -284,22 +279,13 @@ export default function Problem() {
       {/* Main content */}
       {snippetLoading && (
         <div className="problem-empty">
-          {generating ? (
-            <>
-              <BugSpinner size={96} />
-              <p><strong>Hang tight — generating a new problem for you.</strong></p>
-              <p className="output-placeholder">
-                {isRetrying
-                  ? "Still working on it — will check again automatically..."
-                  : generatingMessage}
-              </p>
-            </>
-          ) : (
-            <>
-              <BugSpinner size={64} />
-              <p>Loading…</p>
-            </>
-          )}
+          <BugSpinner size={96} />
+          <p><strong>Hang tight — generating a new problem for you.</strong></p>
+          <p className="output-placeholder">
+            {isRetrying
+              ? "Still working on it — will check again automatically..."
+              : generatingMessage}
+          </p>
         </div>
       )}
 
