@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login as apiLogin } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import { useVersion } from "../lib/useVersion";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const version = useVersion();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +66,7 @@ export default function Login() {
         <p className="auth-link">
           Don't have an account? <Link to="/register">Register</Link>
         </p>
+        {version && <p className="auth-version">{version}</p>}
       </div>
     </div>
   );

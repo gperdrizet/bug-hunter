@@ -33,11 +33,10 @@ export default function Dashboard() {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-left">
-          <h1><img src="/bug-hunter.svg" className="nav-logo" alt="" />Bug Hunter</h1>
+          <h1><img src="/bug-hunter.svg" className="nav-logo" alt="" />Bug Hunter{version && <span className="version-tag">{version}</span>}</h1>
           <span className="welcome">
             Welcome, {user?.display_name ?? user?.email}
           </span>
-          {version && <span className="version-tag">{version}</span>}
         </div>
         <nav className="header-nav">
           <Link to="/problem" className="btn btn-primary">

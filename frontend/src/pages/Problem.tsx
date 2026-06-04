@@ -99,7 +99,6 @@ export default function Problem() {
 
   // Timers
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const generatingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retryCount = useRef(0);
 
@@ -129,8 +128,7 @@ export default function Problem() {
       setResults([]);
       setCodeOutput(null);
       setSolved(false);
-      setGenerating(false);
-      generatingTimer.current = setTimeout(() => setGenerating(true), 2000);
+      setGenerating(true);
     }
     setSnippetError(null);
     setSnippetLoading(true);
@@ -163,7 +161,6 @@ export default function Problem() {
         setSnippet(null);
       }
     } finally {
-      if (generatingTimer.current) clearTimeout(generatingTimer.current);
       if (!willRetry) {
         setGenerating(false);
         setSnippetLoading(false);
@@ -264,6 +261,7 @@ export default function Problem() {
       {/* Top bar */}
       <header className="problem-header">
         <img src="/bug-hunter.svg" className="nav-logo-sm" alt="Bug Hunter" />
+        {version && <span className="version-tag">{version}</span>}
         <Link to="/dashboard" className="btn btn-ghost">
           Dashboard
         </Link>
@@ -276,7 +274,6 @@ export default function Problem() {
           loading={snippetLoading}
         />
         <div className="header-right">
-          {version && <span className="version-tag">{version}</span>}
           <span className="welcome-small">{user?.display_name ?? user?.email}</span>
           <button className="btn btn-ghost" onClick={logout}>
             Sign Out
