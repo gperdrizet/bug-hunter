@@ -4,17 +4,9 @@
 [![Deploy: staging](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml)
 [![Deploy: production](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml)
 
-![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
-![Monaco Editor](https://img.shields.io/badge/Monaco_Editor-0078D4?logo=visualstudiocode&logoColor=white)
-![Pyodide](https://img.shields.io/badge/Pyodide-3776AB?logo=python&logoColor=white)
+Simple educational tool for Python coding. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Each snippet is produced by a three-pass LLM pipeline: the first pass generates a working solution, the second generates and verifies test cases against it, and the third introduces a bug and confirms it breaks at least one test.
 
-Educational tool for Python bug-fixing. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Code samples generated across different topics and difficulty levels with few-shot prompting.
+![Bug Hunter screenshot](docs/screenshot.png)
 
 ## Using Bug Hunter
 
@@ -29,7 +21,7 @@ Bug Hunter is currently in closed beta. To request access, email **admin@bug-hun
 
 **1. Pick a topic and difficulty**
 
-Use the dropdowns at the top of the page to choose a Python topic (e.g. *Loops*, *Functions*, *Classes*) and a difficulty level (*Easy*, *Medium*, or *Hard*), then click **New Snippet**.
+Use the dropdowns at the top of the page to choose a Python topic (e.g. *Loops*, *Functions*, *Classes*) and a difficulty level (*Easy*, *Medium*, or *Hard*), then click **New Snippet** (note: ).
 
 **2. Find the bug**
 
