@@ -50,9 +50,7 @@ Click **Give Up** to reveal the working solution, then click **Next Snippet** to
 
 Your progress is saved automatically. Return to the **Dashboard** at any time to see your solve rate by topic.
 
----
-
-## Local development
+## Development
 
 ### Prerequisites
 
@@ -126,32 +124,35 @@ Open **http://localhost:5173**. The Vite dev server proxies all `/api/*` request
 The backend API docs are available at **http://localhost:8000/docs**.
 
 ### Creating the first admin account
+
+**1. Insert a one-time invite code into the DB**
+
+```bash
 PGPASSWORD=bughunter psql -h localhost -p 5433 -U bughunter bughunter \
   -c "INSERT INTO invite_codes (code, is_active) VALUES ('test123', true);"
+```
 
-# Register via the API
+**2. Register via the API**
+
+```bash
 curl -s -X POST http://localhost:8000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@example.com","password":"password123","invite_code":"test123"}' \
   | python3 -m json.tool
+```
 
-# Promote the user to admin
+**3. Promote the account to admin**
+
+```bash
 PGPASSWORD=bughunter psql -h localhost -p 5433 -U bughunter bughunter \
   -c "UPDATE \"user\" SET is_admin = true WHERE email = 'admin@example.com';"
 ```
 
-Then log in at http://localhost:5173/login and use the **Admin → Generate** panel to test the LLM pipeline.
+Then log in at http://localhost:5173/login and use the **Admin > Generate** panel to test the LLM pipeline.
 
 ## Deployment
 
-### Overview
-
-The project uses two environments hosted on gatekeeper:
-
-| Environment | URL | Port |
-|---|---|---|
-| Staging | `http://100.64.0.1:8507` (Tailnet only) | 8507 |
-| Production | `https://bug-hunter.perdrizet.org` | 8509 (proxied by nginx) |
+The project runs on a self-hosted VPS behind an nginx reverse proxy and uses two environments: staging and production. Both are deployed via GitHub Actions.
 
 ### CI/CD workflows
 
@@ -161,59 +162,7 @@ The project uses two environments hosted on gatekeeper:
 
 Both jobs must pass before a PR can be merged.
 
-**Deploy Staging** (`deploy-staging.yml`): runs automatically on every push to `main`:
-- SSHs into gatekeeper, pulls latest code to `/opt/bug-hunter-staging/`
-- Builds and starts containers with `docker compose -f docker-compose.yml -f docker-compose.staging.yml up --build -d`
-- Health checks `http://100.64.0.1:8507/api/health`
+**Deploy Staging** (`deploy-staging.yml`): runs automatically on every push to `main`. Builds and starts containers on the staging server and runs a health check.
 
-**Deploy Production** (`deploy-prod.yml`): manual dispatch only:
-- Requires `version` (e.g. `v0.1.0`) and `confirm` set to `deploy`
-- SSHs into gatekeeper, pulls latest code to `/opt/bug-hunter/`
-- Builds and starts containers with `docker compose up --build -d`
-- Health checks `http://127.0.0.1:8509/api/health`
-- Creates a git tag and GitHub release
-
-### Server setup
-
-The host nginx on gatekeeper reverse proxies `bug-hunter.perdrizet.org` → `127.0.0.1:8509`. The nginx config lives in `vps-infrastructure/configs/nginx/conf.d/bug-hunter.conf`.
-
-Each environment needs a `.env` file on the server (not committed to git):
-
-```
-DATABASE_URL=postgresql+asyncpg://bughunter:bughunter@db:5432/bughunter
-SECRET_KEY=<generate with: python3 -c "import secrets; print(secrets.token_hex(32))">
-LLM_PROVIDER=openai
-OPENAI_BASE_URL=<your LLM endpoint>
-OPENAI_MODEL=<model name>
-OPENAI_API_KEY=<your API key>
-CORS_ORIGINS=["https://bug-hunter.perdrizet.org"]   # or http://100.64.0.1:8507 for staging
-```
-
-### Required GitHub secrets
-
-| Secret | Description |
-|---|---|
-| `GATEKEEPER_HOST` | Public IP of the server |
-| `GATEKEEPER_USER` | SSH login username |
-| `GATEKEEPER_SSH_KEY` | Private key with access to gatekeeper (no passphrase) |
-
-### Creating the first admin account (production)
-
-The prod DB is not exposed externally, so all DB access goes through `docker exec`. SSH into gatekeeper and run:
-
-```bash
-# Insert a one-time invite code
-docker exec bug-hunter-db-1 psql -U bughunter -d bughunter \
-  -c "INSERT INTO invite_codes (code, is_active) VALUES ('admin-setup', true);"
-
-# Register the admin account (replace YOUR_PASSWORD)
-curl -s -X POST http://127.0.0.1:8509/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@bug-hunter.perdrizet.org","password":"YOUR_PASSWORD","invite_code":"admin-setup"}' \
-  | python3 -m json.tool
-
-# Promote to admin
-docker exec bug-hunter-db-1 psql -U bughunter -d bughunter \
-  -c "UPDATE \"user\" SET is_admin = true, is_superuser = true WHERE email = 'admin@bug-hunter.perdrizet.org';"
-```
+**Deploy Production** (`deploy-prod.yml`): manual dispatch only. Requires a `version` (e.g. `v0.1.0`) and `confirm` set to `deploy`. Builds and starts containers, health checks, then creates a git tag and GitHub release.
 
