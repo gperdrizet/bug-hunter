@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMyHistory, getMyStats } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import { useVersion } from "../lib/useVersion";
 import type { SnippetSummary, UserStats } from "../types";
 import { DIFFICULTIES, TOPICS } from "../types";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
+  const version = useVersion();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [history, setHistory] = useState<SnippetSummary[]>([]);
   const [solvedOnly, setSolvedOnly] = useState(false);
@@ -35,6 +37,7 @@ export default function Dashboard() {
           <span className="welcome">
             Welcome, {user?.display_name ?? user?.email}
           </span>
+          {version && <span className="version-tag">{version}</span>}
         </div>
         <nav className="header-nav">
           <Link to="/problem" className="btn btn-primary">

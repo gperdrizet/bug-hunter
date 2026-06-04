@@ -174,4 +174,9 @@ export const getJobStatus = async (job_id: string): Promise<JobStatus> => {
   return data;
 };
 
+export const getHealth = async (): Promise<{ status: string; version: string }> => {
+  const { data } = await api.get<{ status: string; version: string }>("/health");
+  return data;
+};
+
 export default api;
