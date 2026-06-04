@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +13,9 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 )
+
+_VERSION_FILE = Path(__file__).parent.parent.parent / "VERSION"
+_version = _VERSION_FILE.read_text().strip() if _VERSION_FILE.exists() else "dev"
 
 
 @asynccontextmanager
@@ -42,4 +46,4 @@ app.include_router(admin.router, prefix="/api")
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok"}
+    return {"status": "ok", "version": _version}
