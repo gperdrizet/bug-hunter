@@ -1,8 +1,18 @@
 # Bug Hunter
 
-[![Tests](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml)
-[![Deploy Staging](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml)
-[![Deploy Production](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml)
+[![CI](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml)
+[![Deploy: staging](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml)
+[![Deploy: production](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml)
+
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![Monaco Editor](https://img.shields.io/badge/Monaco_Editor-0078D4?logo=visualstudiocode&logoColor=white)
+![Pyodide](https://img.shields.io/badge/Pyodide-3776AB?logo=python&logoColor=white)
 
 Educational tool for Python bug-fixing. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Code samples generated across different topics and difficulty levels with few-shot prompting.
 
@@ -14,7 +24,6 @@ Bug Hunter is currently in closed beta. To request access, email **admin@bug-hun
 
 **https://bug-hunter.perdrizet.org/register**
 
-Enter your email, a password, and the invite code. Once registered, log in at **https://bug-hunter.perdrizet.org/login**.
 
 ### How to use it
 
@@ -165,4 +174,12 @@ Both jobs must pass before a PR can be merged.
 **Deploy Staging** (`deploy-staging.yml`): runs automatically on every push to `main`. Builds and starts containers on the staging server and runs a health check.
 
 **Deploy Production** (`deploy-prod.yml`): manual dispatch only. Requires a `version` (e.g. `v0.1.0`) and `confirm` set to `deploy`. Builds and starts containers, health checks, then creates a git tag and GitHub release.
+
+## Contributing
+
+Bug reports, feature suggestions, and pull requests are welcome. Please open an issue first to discuss significant changes before submitting a PR. All pull requests must pass CI checks before they can be merged.
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
 
