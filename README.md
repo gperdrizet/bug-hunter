@@ -3,6 +3,7 @@
 [![CI](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/test.yml)
 [![Deploy: staging](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-staging.yml)
 [![Deploy: production](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/gperdrizet/bug-hunter/actions/workflows/deploy-prod.yml)
+[![Production](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fbug-hunter.perdrizet.org%2Fapi%2Fhealth&query=version&label=production&color=green)](https://bug-hunter.perdrizet.org)
 
 Simple educational tool for Python coding. Students are shown broken Python snippets and must fix them in-browser using a Monaco editor with Pyodide-powered test execution. Each snippet is produced by a three-pass LLM pipeline: the first pass generates a working solution, the second generates and verifies test cases against it, and the third introduces a bug and confirms it breaks at least one test.
 

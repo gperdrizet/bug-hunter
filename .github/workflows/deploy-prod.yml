@@ -60,6 +60,8 @@ jobs:
 
           git -C "$DEPLOY_DIR" pull --ff-only
 
+          echo "v${{ github.event.inputs.version }}" > "$DEPLOY_DIR/VERSION"
+
           cd "$DEPLOY_DIR"
 
           docker compose \
